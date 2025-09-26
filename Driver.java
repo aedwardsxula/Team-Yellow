@@ -1,7 +1,35 @@
+
 import java.io.*;
 import java.util.*;
 
 public class Driver {
+    // ========== MAIN ==========
+    public static void main(String[] args) {
+        System.out.println("Driver running...");
+
+        List<InsuranceRecord> data = load("insurance (1).csv", 50);
+
+        // Feature 02
+        System.out.println("=== Feature 02: Stats ===");
+        Map<String, Map<String, Double>> stats = stats(data);
+        for (String col : stats.keySet()) {
+            System.out.println(col + " -> " + stats.get(col));
+        }
+        System.out.println();
+
+        // Feature 04
+        System.out.println("=== Feature 04: BMI Histogram ===");
+        for (String line : bmiHistogramVertical(data, 2.0)) {
+            System.out.println(line);
+        }
+        System.out.println();
+
+        // Feature 06
+        System.out.println("=== Feature 06: Smoker Histogram ===");
+        for (String line : smokerHistogramVertical(data)) {
+            System.out.println(line);
+        }
+    }
 
     // ========== InsuranceRecord Class ==========
     static class InsuranceRecord {
@@ -151,34 +179,6 @@ public class Driver {
         }
         output.add(" S   N "); // labels
         return output;
-    }
-
-    // ========== MAIN ==========
-    public static void main(String[] args) {
-        System.out.println("Driver running...");
-
-        List<InsuranceRecord> data = load("insurance (1).csv", 50);
-
-        // Feature 02
-        System.out.println("=== Feature 02: Stats ===");
-        Map<String, Map<String, Double>> stats = stats(data);
-        for (String col : stats.keySet()) {
-            System.out.println(col + " -> " + stats.get(col));
-        }
-        System.out.println();
-
-        // Feature 04
-        System.out.println("=== Feature 04: BMI Histogram ===");
-        for (String line : bmiHistogramVertical(data, 2.0)) {
-            System.out.println(line);
-        }
-        System.out.println();
-
-        // Feature 06
-        System.out.println("=== Feature 06: Smoker Histogram ===");
-        for (String line : smokerHistogramVertical(data)) {
-            System.out.println(line);
-        }
     }
 }
 
