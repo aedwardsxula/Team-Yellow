@@ -8,10 +8,8 @@ import java.io.*;
 import java.util.*;
 import java.nio.file.*;
 
-
 public class Driver {
 
-   
     static class InsuranceRecord {
         int age;
         String sex;
@@ -40,7 +38,7 @@ public class Driver {
         }
     }
 
-    // Also STATIC helper to load first N records
+    // ---- Load first N records from CSV ----
     static List<InsuranceRecord> loadFirstN(String csvPath, int N) throws IOException {
         List<InsuranceRecord> out = new ArrayList<>();
         try (BufferedReader br = Files.newBufferedReader(Paths.get(csvPath))) {
@@ -70,6 +68,78 @@ public class Driver {
         return out;
     }
 
+    // ==== HISTOGRAM UTILITIES ====
+
+    // build list of ages from records
+    static List<Integer> agesFrom(List<InsuranceRecord> records) {
+        List<Integer> ages = new ArrayList<>(records.size());
+        for (InsuranceRecord r : records) ages.add(r.age);
+        return ages;
+    }
+
+    // simple per-age histogram
+    static void printPerAgeHistogram(List<Integer> ages, int maxWidth) {
+        if (ages.isEmpty()) { System.out.println("No ages to plot."); return; }
+        Map<Integer,Integer> freq = new TreeMap<>();
+        for (int a : ages) freq.merge(a, 1, Integer::sum);
+        int maxCount = freq.values().stream().mapToInt(Integer::intValue).max().orElse(1);
+
+        System.out.println("\nHorizontal Histogram (per age):");
+        for (Map.Entry<Integer,Integer> e : freq.entrySet()) {
+            int age = e.getKey(), count = e.getValue();
+            System.out.printf("%3d: %s (%d)%n", age, bar(count, maxCount, maxWidth), count);
+        }
+    }
+
+    // binned histogram, e.g., binSize = 5 -> 15-19, 20-24, ...
+    static void printBinnedHistogram(List<Integer> ages, int binSize, int maxWidth) {
+        if (ages.isEmpty()) { System.out.println("No ages to plot."); return; }
+        int min = ages.stream().mapToInt(i -> i).min().orElse(0);
+        int max = ages.stream().mapToInt(i -> i).max().orElse(0);
+
+        int start = (int)Math.floor(min / (double)binSize) * binSize;
+        int end   = (int)Math.ceil((max + 1) / (double)binSize) * binSize - 1;
+
+        Map<String,Integer> bins = new LinkedHashMap<>();
+        for (int lo = start; lo <= end; lo += binSize) {
+            int hi = lo + binSize - 1;
+            bins.put(String.format("%d-%d", lo, hi), 0);
+        }
+
+        for (int a : ages) {
+            int lo = (a / binSize) * binSize;
+            int hi = lo + binSize - 1;
+            String label = String.format("%d-%d", lo, hi);
+            // clamp if outside due to rounding
+            if (!bins.containsKey(label)) {
+                if (a < start) label = String.format("%d-%d", start, start + binSize - 1);
+                else label = String.format("%d-%d", end - binSize + 1, end);
+            }
+            bins.put(label, bins.get(label) + 1);
+        }
+
+        int maxCount = bins.values().stream().mapToInt(Integer::intValue).max().orElse(1);
+        int labelWidth = bins.keySet().stream().mapToInt(String::length).max().orElse(7);
+
+        System.out.printf("\nHorizontal Histogram (bins, size=%d):%n", binSize);
+        for (Map.Entry<String,Integer> e : bins.entrySet()) {
+            String label = e.getKey();
+            int count = e.getValue();
+            System.out.printf("%" + labelWidth + "s: %s (%d)%n", label, bar(count, maxCount, maxWidth), count);
+        }
+    }
+
+    // make a scaled bar of '#' characters
+    static String bar(int count, int maxCount, int maxWidth) {
+        if (count <= 0 || maxCount <= 0) return "";
+        int len = (int)Math.round((count * 1.0 / maxCount) * maxWidth);
+        len = Math.max(len, 1); // show at least one '#'
+        char[] arr = new char[len];
+        Arrays.fill(arr, '#');
+        return new String(arr);
+    }
+
+    // ==== MAIN ====
     public static void main(String[] args) {
         if (args.length != 2) {
             System.err.println("Usage: java Driver <path-to-insurance.csv> <N>");
@@ -92,11 +162,15 @@ public class Driver {
             for (int i = 0; i < records.size(); i++) {
                 System.out.printf("#%d %s%n", i + 1, records.get(i));
             }
+
+            // --- print histograms ---
+            List<Integer> ages = agesFrom(records);
+            printPerAgeHistogram(ages, 50);      // per-age bars (max width 50)
+            printBinnedHistogram(ages, 5, 50);   // 5-year bins (max width 50)
+
         } catch (IOException e) {
             System.err.println("I/O error: " + e.getMessage());
             System.exit(1);
         }
     }
 }
-
-
