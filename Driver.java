@@ -70,14 +70,12 @@ public class Driver {
 
     // ==== HISTOGRAM UTILITIES ====
 
-    // build list of ages from records
     static List<Integer> agesFrom(List<InsuranceRecord> records) {
         List<Integer> ages = new ArrayList<>(records.size());
         for (InsuranceRecord r : records) ages.add(r.age);
         return ages;
     }
 
-    // simple per-age histogram
     static void printPerAgeHistogram(List<Integer> ages, int maxWidth) {
         if (ages.isEmpty()) { System.out.println("No ages to plot."); return; }
         Map<Integer,Integer> freq = new TreeMap<>();
@@ -91,7 +89,6 @@ public class Driver {
         }
     }
 
-    // binned histogram, e.g., binSize = 5 -> 15-19, 20-24, ...
     static void printBinnedHistogram(List<Integer> ages, int binSize, int maxWidth) {
         if (ages.isEmpty()) { System.out.println("No ages to plot."); return; }
         int min = ages.stream().mapToInt(i -> i).min().orElse(0);
@@ -110,7 +107,6 @@ public class Driver {
             int lo = (a / binSize) * binSize;
             int hi = lo + binSize - 1;
             String label = String.format("%d-%d", lo, hi);
-            // clamp if outside due to rounding
             if (!bins.containsKey(label)) {
                 if (a < start) label = String.format("%d-%d", start, start + binSize - 1);
                 else label = String.format("%d-%d", end - binSize + 1, end);
@@ -129,7 +125,6 @@ public class Driver {
         }
     }
 
-    // make a scaled bar of '#' characters
     static String bar(int count, int maxCount, int maxWidth) {
         if (count <= 0 || maxCount <= 0) return "";
         int len = (int)Math.round((count * 1.0 / maxCount) * maxWidth);
@@ -137,6 +132,24 @@ public class Driver {
         char[] arr = new char[len];
         Arrays.fill(arr, '#');
         return new String(arr);
+    }
+
+    // ==== NEW: CHILDREN COUNTS ====
+
+    /** Returns counts keyed by number of children (0,1,2,...) sorted ascending. */
+    static Map<Integer,Integer> childrenCounts(List<InsuranceRecord> records) {
+        Map<Integer,Integer> counts = new TreeMap<>();
+        for (InsuranceRecord r : records) {
+            counts.merge(r.children, 1, Integer::sum);
+        }
+        return counts;
+    }
+
+    static void printChildrenCounts(Map<Integer,Integer> counts) {
+        System.out.println("\nTotal records by number of children:");
+        for (Map.Entry<Integer,Integer> e : counts.entrySet()) {
+            System.out.printf("children=%d -> %d record(s)%n", e.getKey(), e.getValue());
+        }
     }
 
     // ==== MAIN ====
@@ -163,10 +176,14 @@ public class Driver {
                 System.out.printf("#%d %s%n", i + 1, records.get(i));
             }
 
-            // --- print histograms ---
+            // --- histograms ---
             List<Integer> ages = agesFrom(records);
-            printPerAgeHistogram(ages, 50);      // per-age bars (max width 50)
-            printBinnedHistogram(ages, 5, 50);   // 5-year bins (max width 50)
+            printPerAgeHistogram(ages, 50);
+            printBinnedHistogram(ages, 5, 50);
+
+            // --- children counts ---
+            Map<Integer,Integer> byChildren = childrenCounts(records);
+            printChildrenCounts(byChildren);
 
         } catch (IOException e) {
             System.err.println("I/O error: " + e.getMessage());
