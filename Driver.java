@@ -2,11 +2,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.io.*;
 import java.util.*;
-import java.nio.file.*;
 
 public class Driver {
 
@@ -145,6 +141,46 @@ public class Driver {
         return counts;
     }
 
+     static class Stats {
+        long count = 0;
+        double sum = 0.0;
+        double min = Double.POSITIVE_INFINITY;
+        double max = Double.NEGATIVE_INFINITY;
+        void add(double v) {
+            count++; sum += v;
+            if (v < min) min = v;
+            if (v > max) max = v;
+        }
+        double avg() { return count == 0 ? 0.0 : sum / count; }
+    }
+
+    static Map<String, Stats> computeFeature02Stats(List<InsuranceRecord> records) {
+        Stats age = new Stats(), bmi = new Stats(), children = new Stats(), charges = new Stats();
+        for (InsuranceRecord r : records) {
+            age.add(r.age);
+            bmi.add(r.bmi);
+            children.add(r.children);
+            charges.add(r.charges);
+        }
+        Map<String, Stats> map = new LinkedHashMap<>();
+        map.put("age", age);
+        map.put("bmi", bmi);
+        map.put("children", children);
+        map.put("charges", charges);
+        return map;
+    }
+
+    static void printFeature02(Map<String, Stats> stats) {
+        System.out.println("\n=== Feature 02: Stats for age, bmi, children, and charges ===");
+        System.out.printf("%-10s %8s %12s %12s %12s%n", "column", "count", "min", "max", "avg");
+        System.out.println("--------------------------------------------------------------");
+        for (Map.Entry<String, Stats> e : stats.entrySet()) {
+            Stats s = e.getValue();
+            System.out.printf("%-10s %8d %12.2f %12.2f %12.2f%n",
+                    e.getKey(), s.count, s.min, s.max, s.avg());
+        }
+    }
+
     static void printChildrenCounts(Map<Integer,Integer> counts) {
         System.out.println("\nTotal records by number of children:");
         for (Map.Entry<Integer,Integer> e : counts.entrySet()) {
@@ -175,6 +211,10 @@ public class Driver {
             for (int i = 0; i < records.size(); i++) {
                 System.out.printf("#%d %s%n", i + 1, records.get(i));
             }
+
+             // --- FEATURE 02: stats ---
+            Map<String, Stats> stats = computeFeature02Stats(records);
+            printFeature02(stats);
 
             // --- histograms ---
             List<Integer> ages = agesFrom(records);
