@@ -364,6 +364,61 @@ public class Driver {
         return dist;
     }
 
+    // === Feature 16: avg age smokers vs non-smokers ===
+    public static Map<String, Double> feature16_avgAges(List<InsuranceRecord> records) {
+        double smokerSum = 0.0;
+        double nonSum = 0.0;
+        int smokerCount = 0;
+        int nonCount = 0;
+
+        for (int i = 0; i < records.size(); i++) {
+            InsuranceRecord r = records.get(i);
+            if (r.smoker.equalsIgnoreCase("yes")) {
+                smokerSum += r.age;
+                smokerCount++;
+            } else {
+                nonSum += r.age;
+                nonCount++;
+            }
+        }
+        Map<String, Double> out = new LinkedHashMap<String, Double>();
+        double sAvg = 0.0;
+        double nAvg = 0.0;
+        if (smokerCount != 0) sAvg = smokerSum / smokerCount;
+        if (nonCount != 0) nAvg = nonSum / nonCount;
+        out.put("smoker_avg_age", sAvg);
+        out.put("nonsmoker_avg_age", nAvg);
+        return out;
+    }
+
+    // === Feature 18: avg BMI south vs north ===
+    public static Map<String, Double> feature18_bmiSouthNorth(List<InsuranceRecord> records) {
+        double southSum = 0.0;
+        double northSum = 0.0;
+        int southCount = 0;
+        int northCount = 0;
+
+        for (int i = 0; i < records.size(); i++) {
+            InsuranceRecord r = records.get(i);
+            String reg = r.region.toLowerCase();
+            if (reg.indexOf("south") >= 0) {
+                southSum += r.bmi;
+                southCount++;
+            } else if (reg.indexOf("north") >= 0) {
+                northSum += r.bmi;
+                northCount++;
+            }
+        }
+        Map<String, Double> out = new LinkedHashMap<String, Double>();
+        double sAvg = 0.0;
+        double nAvg = 0.0;
+        if (southCount != 0) sAvg = southSum / southCount;
+        if (northCount != 0) nAvg = northSum / northCount;
+        out.put("south_avg_bmi", sAvg);
+        out.put("north_avg_bmi", nAvg);
+        return out;
+    }
+
     // ==== MAIN ====
     public static void main(String[] args) {
         if (args.length != 2) {
@@ -429,6 +484,17 @@ public class Driver {
             Map.Entry<Integer, Integer> e = it14.next();
             System.out.println(e.getKey() + " -> " + e.getValue());
         }
+        //  Feature 16
+        System.out.println("\n=== Feature 16: Avg Age (smokers vs non-smokers) ===");
+        Map<String, Double> f16 = Driver.feature16_avgAges(records);
+        System.out.printf("smoker_avg_age: %.2f%n", f16.get("smoker_avg_age"));
+        System.out.printf("nonsmoker_avg_age: %.2f%n", f16.get("nonsmoker_avg_age"));
+
+        // Feature 18
+        System.out.println("\n=== Feature 18: Avg BMI (south vs north) ===");
+        Map<String, Double> f18 = Driver.feature18_bmiSouthNorth(records);
+        System.out.printf("south_avg_bmi: %.2f%n", f18.get("south_avg_bmi"));
+        System.out.printf("north_avg_bmi: %.2f%n", f18.get("north_avg_bmi"));
 
 
             
