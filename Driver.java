@@ -292,47 +292,54 @@ public class Driver {
         System.out.println(" S   NS ");
     }
 
-    // === Feature 04: vertical BMI histogram ===
-    public static Map<Integer, Integer> feature04_bmiBins(List<InsuranceRecord> records, int binSize) {
-        Map<Integer, Integer> bins = new TreeMap<Integer, Integer>();
-        for (int i = 0; i < records.size(); i++) {
-            InsuranceRecord r = records.get(i);
-            int b = ((int) Math.floor(r.bmi / binSize)) * binSize;
-            Integer cur = bins.get(b);
-            if (cur == null) cur = 0;
-            bins.put(b, cur + 1);
-        }
-        return bins;
+// === Feature 10: more children ⇒ lower charge per child ===
+public static boolean feature10_lowerChargePerChild(List<InsuranceRecord> records) {
+    Map<Integer, List<Double>> groups = new TreeMap<>();
+    for (InsuranceRecord r : records) {
+        groups.computeIfAbsent(r.children, k -> new ArrayList<>()).add(r.charges);
     }
 
-    public static void printFeature04(Map<Integer, Integer> bins) {
-        // find peak
-        int peak = 1;
-        Iterator<Integer> itValues = bins.values().iterator();
-        while (itValues.hasNext()) {
-            int v = itValues.next();
-            if (v > peak) peak = v;
-        }
+    double prev = Double.MAX_VALUE; // we expect per-child avg to be nonincreasing as children↑
+    for (int c : groups.keySet()) {
+        List<Double> list = groups.get(c);
+        double sum = 0.0;
+        for (double v : list) sum += v;
+        double avg = list.isEmpty() ? 0.0 : sum / list.size();
+        double perChild = (c == 0) ? avg : avg / c;
 
-        for (int level = peak; level >= 1; level--) {
-            StringBuilder row = new StringBuilder();
-            Iterator<Integer> itKeys = bins.keySet().iterator();
-            while (itKeys.hasNext()) {
-                int b = itKeys.next();
-                int count = bins.get(b);
-                if (count >= level) row.append(" # ");
-                else row.append("   ");
-            }
-            System.out.println(row.toString());
-        }
-        StringBuilder base = new StringBuilder();
-        Iterator<Integer> itKeys2 = bins.keySet().iterator();
-        while (itKeys2.hasNext()) {
-            int b = itKeys2.next();
-            base.append(String.format("%2d ", b));
-        }
-        System.out.println(base.toString());
+        if (perChild > prev) return false; // broke the nonincreasing condition
+        prev = perChild;
     }
+    return true;
+}
+
+// === Feature 04: vertical BMI histogram ===
+public static Map<Integer, Integer> feature04_bmiBins(List<InsuranceRecord> records, int binSize) {
+    Map<Integer, Integer> bins = new TreeMap<>();
+    for (InsuranceRecord r : records) {
+        int b = ((int) Math.floor(r.bmi / binSize)) * binSize;
+        bins.put(b, bins.getOrDefault(b, 0) + 1);
+    }
+    return bins;
+}
+
+public static void printFeature04(Map<Integer, Integer> bins) {
+    int peak = 1;
+    for (int v : bins.values()) peak = Math.max(peak, v);
+
+    for (int level = peak; level >= 1; level--) {
+        StringBuilder row = new StringBuilder();
+        for (int b : bins.keySet()) {
+            int count = bins.get(b);
+            row.append(count >= level ? " # " : "   ");
+        }
+        System.out.println(row.toString());
+    }
+    StringBuilder base = new StringBuilder();
+    for (int b : bins.keySet()) base.append(String.format("%2d ", b));
+    System.out.println(base.toString());
+}
+
 
     // ==== MAIN ====
     public static void main(String[] args) {
@@ -377,6 +384,12 @@ public class Driver {
         System.out.println("\n=== Feature 08: Avg charges age>=50 at least 2x age<=20 ? ===");
         boolean f08 = Driver.feature08_oldVsYoungCharges(records);
         if (f08) System.out.println("TRUE");
+        else System.out.println("FALSE");
+
+        //  Feature 10
+        System.out.println("\n=== Feature 10: More children ⇒ lower charge per child (monotone) ? ===");
+        boolean f10 = Driver.feature10_lowerChargePerChild(records);
+        if (f10) System.out.println("TRUE");
         else System.out.println("FALSE");
             
 
