@@ -245,6 +245,31 @@ public class Driver {
         return counts;
     }
 
+    // === Feature 08: charges >=50 vs <=20 ===
+    public static boolean feature08_oldVsYoungCharges(List<InsuranceRecord> records) {
+        double oldSum = 0.0;
+        double youngSum = 0.0;
+        int oldCount = 0;
+        int youngCount = 0;
+
+        for (int i = 0; i < records.size(); i++) {
+            InsuranceRecord r = records.get(i);
+            if (r.age >= 50) {
+                oldSum += r.charges;
+                oldCount++;
+            }
+            if (r.age <= 20) {
+                youngSum += r.charges;
+                youngCount++;
+            }
+        }
+        if (oldCount == 0 || youngCount == 0) return false;
+
+        double oldAvg = oldSum / oldCount;
+        double youngAvg = youngSum / youngCount;
+        return oldAvg >= 2.0 * youngAvg;
+    }
+
     public static void printFeature06(Map<String, Integer> counts) {
         int max = 1;
         Iterator<Integer> itValues = counts.values().iterator();
@@ -304,6 +329,12 @@ public class Driver {
         Map<String, Integer> smokeCounts = Driver.feature06_smokerCounts(records);
         System.out.println("\n=== Feature 06: Smokers vs Non-Smokers (Vertical) ===");
         Driver.printFeature06(smokeCounts);
+
+        //Feature 08
+        System.out.println("\n=== Feature 08: Avg charges age>=50 at least 2x age<=20 ? ===");
+        boolean f08 = Driver.feature08_oldVsYoungCharges(records);
+        if (f08) System.out.println("TRUE");
+        else System.out.println("FALSE");
             
 
         
