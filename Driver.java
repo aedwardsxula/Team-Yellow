@@ -419,6 +419,50 @@ public class Driver {
         return out;
     }
 
+
+     // === Feature 20: regression charges ~ BMI ===
+    public static void feature20_regressionBMI(List<InsuranceRecord> records) {
+        double sumX = 0.0;
+        double sumY = 0.0;
+        double sumXY = 0.0;
+        double sumX2 = 0.0;
+        double sumY2 = 0.0;
+
+        int n = records.size();
+        for (int i = 0; i < n; i++) {
+            InsuranceRecord r = records.get(i);
+            sumX += r.bmi;
+            sumY += r.charges;
+            sumXY += r.bmi * r.charges;
+            sumX2 += r.bmi * r.bmi;
+            sumY2 += r.charges * r.charges;
+        }
+
+        double denomSlope = (n * sumX2 - sumX * sumX);
+        if (denomSlope == 0.0) {
+            System.out.println("Cannot compute regression: degenerate X variance.");
+            return;
+        }
+        double slope = (n * sumXY - sumX * sumY) / denomSlope;
+        double intercept = (sumY - slope * sumX) / n;
+
+        double rNum = n * sumXY - sumX * sumY;
+        double rDenTermX = n * sumX2 - sumX * sumX;
+        double rDenTermY = n * sumY2 - sumY * sumY;
+        double rDen = Math.sqrt(rDenTermX * rDenTermY);
+        double r = 0.0;
+        if (rDen != 0.0) r = rNum / rDen;
+
+        System.out.printf("y = %.2f + %.2f*x, r=%.3f%n", intercept, slope, r);
+
+        for (int i = 0; i <= 10; i++) {
+            double x = 15 + i * 3.0; // BMI values
+            double pred = intercept + slope * x;
+            System.out.printf("BMI %.1f => charges %.2f%n", x, pred);
+        }
+    }
+
+
     // ==== MAIN ====
     public static void main(String[] args) {
         if (args.length != 2) {
@@ -495,6 +539,10 @@ public class Driver {
         Map<String, Double> f18 = Driver.feature18_bmiSouthNorth(records);
         System.out.printf("south_avg_bmi: %.2f%n", f18.get("south_avg_bmi"));
         System.out.printf("north_avg_bmi: %.2f%n", f18.get("north_avg_bmi"));
+
+        // Feature 20
+        System.out.println("\n=== Feature 20: Regression charges ~ BMI ===");
+        Driver.feature20_regressionBMI(records);
 
 
             
