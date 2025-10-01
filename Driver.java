@@ -299,12 +299,14 @@ public class Driver {
         Map<Integer, Integer> bmiBins = Driver.feature04_bmiBins(records, 5);
         System.out.println("\n=== Feature 04: BMI Vertical Histogram (bin=5) ===");
         Driver.printFeature04(bmiBins);
-
+        
         // Feature 06
         Map<String, Integer> smokeCounts = Driver.feature06_smokerCounts(records);
         System.out.println("\n=== Feature 06: Smokers vs Non-Smokers (Vertical) ===");
         Driver.printFeature06(smokeCounts);
             
+
+        
 
             // --- histograms ---
             List<Integer> ages = agesFrom(records);
