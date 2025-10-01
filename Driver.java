@@ -350,6 +350,20 @@ public class Driver {
         return southAvg >= 1.25 * otherAvg;
     }
 
+     // === Feature 14: smoker age distribution ===
+    public static Map<Integer, Integer> feature14_smokerAgeDist(List<InsuranceRecord> records) {
+        Map<Integer, Integer> dist = new TreeMap<Integer, Integer>();
+        for (int i = 0; i < records.size(); i++) {
+            InsuranceRecord r = records.get(i);
+            if (r.smoker.equalsIgnoreCase("yes")) {
+                Integer cur = dist.get(r.age);
+                if (cur == null) cur = 0;
+                dist.put(r.age, cur + 1);
+            }
+        }
+        return dist;
+    }
+
     // ==== MAIN ====
     public static void main(String[] args) {
         if (args.length != 2) {
@@ -405,6 +419,16 @@ public class Driver {
         boolean f12 = Driver.feature12_southSmokers(records);
         if (f12) System.out.println("TRUE");
         else System.out.println("FALSE");
+
+        // Feature 14
+        System.out.println("\n=== Feature 14: Smoker Age Distribution (age -> count) ===");
+        Map<Integer, Integer> f14 = Driver.feature14_smokerAgeDist(records);
+        // simple print
+        Iterator<Map.Entry<Integer, Integer>> it14 = f14.entrySet().iterator();
+        while (it14.hasNext()) {
+            Map.Entry<Integer, Integer> e = it14.next();
+            System.out.println(e.getKey() + " -> " + e.getValue());
+        }
 
 
             
