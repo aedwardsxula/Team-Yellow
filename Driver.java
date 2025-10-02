@@ -261,6 +261,7 @@ public class Driver {
 
         double oldAvg = oldSum / oldCount;
         double youngAvg = youngSum / youngCount;
+        
         return oldAvg >= 2.0 * youngAvg;
     }
 
@@ -305,7 +306,7 @@ public class Driver {
             // Feature 08: charges comparison
             System.out.println("\n=== Feature 08: Avg charges age>=50 at least 2x age<=20 ? ===");
             boolean f08 = feature08_oldVsYoungCharges(records);
-            System.out.println(f08 ? "TRUE" : "FALSE");
+            System.out.println(f08 ? "TRUE" : "FALSE"); 
 
             // Additional histograms (ages)
             List<Integer> ages = agesFrom(records);
@@ -322,4 +323,4 @@ public class Driver {
     }
 }
 
-            System.err.println("I/O error: " + e.getMessage())
+          //  System.err.println("I/O error: " + e.getMessage())
