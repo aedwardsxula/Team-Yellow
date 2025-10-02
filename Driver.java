@@ -187,47 +187,7 @@ public class Driver {
             System.out.printf("children=%d -> %d record(s)%n", e.getKey(), e.getValue());
         }
     }
-    // === Feature 04: vertical BMI histogram ===
-    public static Map<Integer, Integer> feature04_bmiBins(List<InsuranceRecord> records, int binSize) {
-        Map<Integer, Integer> bins = new TreeMap<Integer, Integer>();
-        for (int i = 0; i < records.size(); i++) {
-            InsuranceRecord r = records.get(i);
-            int b = ((int) Math.floor(r.bmi / binSize)) * binSize;
-            Integer cur = bins.get(b);
-            if (cur == null) cur = 0;
-            bins.put(b, cur + 1);
-        }
-        return bins;
-    }
 
-    public static void printFeature04(Map<Integer, Integer> bins) {
-        // find peak
-        int peak = 1;
-        Iterator<Integer> itValues = bins.values().iterator();
-        while (itValues.hasNext()) {
-            int v = itValues.next();
-            if (v > peak) peak = v;
-        }
-
-        for (int level = peak; level >= 1; level--) {
-            StringBuilder row = new StringBuilder();
-            Iterator<Integer> itKeys = bins.keySet().iterator();
-            while (itKeys.hasNext()) {
-                int b = itKeys.next();
-                int count = bins.get(b);
-                if (count >= level) row.append(" # ");
-                else row.append("   ");
-            }
-            System.out.println(row.toString());
-        }
-        StringBuilder base = new StringBuilder();
-        Iterator<Integer> itKeys2 = bins.keySet().iterator();
-        while (itKeys2.hasNext()) {
-            int b = itKeys2.next();
-            base.append(String.format("%2d ", b));
-        }
-        System.out.println(base.toString());
-    }
 
     // === Feature 06: smokers vs non-smokers (vertical histogram) ===
     public static Map<String, Integer> feature06_smokerCounts(List<InsuranceRecord> records) {
@@ -397,7 +357,7 @@ public static void printFeature04(Map<Integer, Integer> bins) {
             printFeature02(stats);
 
             //Feature 04
- feat/08-old-vs-young
+ 
         Map<Integer, Integer> bmiBins = Driver.feature04_bmiBins(records, 5);
         System.out.println("\n=== Feature 04: BMI Vertical Histogram (bin=5) ===");
         Driver.printFeature04(bmiBins);
@@ -430,10 +390,10 @@ public static void printFeature04(Map<Integer, Integer> bins) {
 
         
 
-            Map<Integer, Integer> bmiBins = Driver.feature04_bmiBins(records, 5);
+            bmiBins = Driver.feature04_bmiBins(records, 5);
             System.out.println("\n=== Feature 04: BMI Vertical Histogram (bin=5) ===");
             Driver.printFeature04(bmiBins);
- main
+ 
 
             // --- histograms ---
             List<Integer> ages = agesFrom(records);
