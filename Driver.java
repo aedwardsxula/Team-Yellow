@@ -142,8 +142,7 @@ public class Driver {
     }
 
 
-    // FEATURE 02: SUMMARY STATS (age, bmi, children, charges)
-    static class Stats {
+    
 
     // FEATURE 02: SUMMARY STATS (age, bmi, children, charges) 
      static class Stats {
@@ -297,15 +296,7 @@ public static boolean feature10_lowerChargePerChild(List<InsuranceRecord> record
     return true;
 }
 
-// === Feature 04: vertical BMI histogram ===
-public static Map<Integer, Integer> feature04_bmiBins(List<InsuranceRecord> records, int binSize) {
-    Map<Integer, Integer> bins = new TreeMap<>();
-    for (InsuranceRecord r : records) {
-        int b = ((int) Math.floor(r.bmi / binSize)) * binSize;
-        bins.put(b, bins.getOrDefault(b, 0) + 1);
-    }
-    return bins;
-}
+
 
 public static void printFeature04(Map<Integer, Integer> bins) {
     int peak = 1;
@@ -504,22 +495,13 @@ public static void printFeature04(Map<Integer, Integer> bins) {
             System.out.println("\n=== Feature 06: Smokers vs Non-Smokers (Vertical) ===");
             printFeature06(smokeCounts);
 
-            //Feature 04
- 
-        Map<Integer, Integer> bmiBins = Driver.feature04_bmiBins(records, 5);
-        System.out.println("\n=== Feature 04: BMI Vertical Histogram (bin=5) ===");
-        Driver.printFeature04(bmiBins);
+            
         
-        // Feature 06
-        Map<String, Integer> smokeCounts = Driver.feature06_smokerCounts(records);
-        System.out.println("\n=== Feature 06: Smokers vs Non-Smokers (Vertical) ===");
-        Driver.printFeature06(smokeCounts);
-
-        //Feature 08
-        System.out.println("\n=== Feature 08: Avg charges age>=50 at least 2x age<=20 ? ===");
-        boolean f08 = Driver.feature08_oldVsYoungCharges(records);
-        if (f08) System.out.println("TRUE");
-        else System.out.println("FALSE");
+            //Feature 08
+            System.out.println("\n=== Feature 08: Avg charges age>=50 at least 2x age<=20 ? ===");
+            boolean f08 = Driver.feature08_oldVsYoungCharges(records);
+            if (f08) System.out.println("TRUE");
+            else System.out.println("FALSE");
 
         //  Feature 10
         System.out.println("\n=== Feature 10: More children ⇒ lower charge per child (monotone) ? ===");
