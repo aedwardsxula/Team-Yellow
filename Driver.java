@@ -265,6 +265,8 @@ public class Driver {
         return oldAvg >= 2.0 * youngAvg;
     }
 
+    
+
     // ==== MAIN ====
     public static void main(String[] args) {
         if (args.length != 2) {
@@ -303,10 +305,12 @@ public class Driver {
             System.out.println("\n=== Feature 06: Smokers vs Non-Smokers (Vertical) ===");
             printFeature06(smokeCounts);
 
+            
             // Feature 08: charges comparison
             System.out.println("\n=== Feature 08: Avg charges age>=50 at least 2x age<=20 ? ===");
             boolean f08 = feature08_oldVsYoungCharges(records);
             System.out.println(f08 ? "TRUE" : "FALSE"); 
+
 
             // Additional histograms (ages)
             List<Integer> ages = agesFrom(records);
