@@ -1,9 +1,5 @@
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.io.*;
 import java.util.*;
 import java.nio.file.*;
@@ -153,41 +149,59 @@ public class Driver {
     }
 
     // ==== MAIN ====
-    public static void main(String[] args) {
+        public static void main(String[] args) {
         if (args.length != 2) {
-            System.err.println("Usage: java Driver <path-to-insurance.csv> <N>");
-            System.exit(2);
+                System.err.println("Usage: java Driver <path-to-insurance.csv> <N>");
+                System.exit(2);
         }
-        String path = args[0];
+        String pathArg = args[0];
         int N;
         try {
-            N = Integer.parseInt(args[1]);
-            if (N <= 0) throw new NumberFormatException();
+                N = Integer.parseInt(args[1]);
+                if (N <= 0) throw new NumberFormatException();
         } catch (NumberFormatException e) {
-            System.err.println("N must be a positive integer.");
-            System.exit(2);
-            return;
+                System.err.println("N must be a positive integer.");
+                System.exit(2);
+                return;
+        }
+
+        // --- NEW: path diagnostics ---
+        Path path = Paths.get(pathArg);
+        System.out.println("Working directory: " + System.getProperty("user.dir"));
+        System.out.println("CSV path argument: " + path.toAbsolutePath());
+
+        if (!Files.exists(path)) {
+                System.err.println("ERROR: File does not exist at: " + path.toAbsolutePath());
+                System.err.println("Tip: If the CSV is next to Driver.java, run: java Driver insurance.csv " + N);
+                System.exit(1);
+        }
+        if (!Files.isReadable(path)) {
+                System.err.println("ERROR: File exists but is not readable: " + path.toAbsolutePath());
+                System.err.println("Fix: chmod +r \"" + path.toAbsolutePath() + "\"");
+                System.exit(1);
         }
 
         try {
-            List<InsuranceRecord> records = loadFirstN(path, N);
-            System.out.println("Stored " + records.size() + " records:");
-            for (int i = 0; i < records.size(); i++) {
+                List<InsuranceRecord> records = loadFirstN(path.toString(), N);
+                System.out.println("Stored " + records.size() + " records:");
+                for (int i = 0; i < records.size(); i++) {
                 System.out.printf("#%d %s%n", i + 1, records.get(i));
-            }
+                }
 
-            // --- histograms ---
-            List<Integer> ages = agesFrom(records);
-            printPerAgeHistogram(ages, 50);
-            printBinnedHistogram(ages, 5, 50);
+                // --- histograms ---
+                List<Integer> ages = agesFrom(records);
+                printPerAgeHistogram(ages, 50);
+                printBinnedHistogram(ages, 5, 50);
 
-            // --- children counts ---
-            Map<Integer,Integer> byChildren = childrenCounts(records);
-            printChildrenCounts(byChildren);
+                // --- children counts ---
+                Map<Integer,Integer> byChildren = childrenCounts(records);
+                printChildrenCounts(byChildren);
 
         } catch (IOException e) {
-            System.err.println("I/O error: " + e.getMessage());
-            System.exit(1);
+                System.err.println("I/O error while reading: " + path.toAbsolutePath());
+                System.err.println("Cause: " + e.getClass().getSimpleName() + " - " + e.getMessage());
+                System.exit(1);
         }
-    }
+        }
+
 }
