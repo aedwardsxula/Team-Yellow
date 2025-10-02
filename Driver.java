@@ -140,7 +140,7 @@ public class Driver {
         }
         return counts;
     }
-
+    // FEATURE 02: SUMMARY STATS (age, bmi, children, charges) 
      static class Stats {
         long count = 0;
         double sum = 0.0;
@@ -292,36 +292,54 @@ public class Driver {
         System.out.println(" S   NS ");
     }
 
-     // === Feature 10: more children ⇒ lower charge per child ===
-    public static boolean feature10_lowerChargePerChild(List<InsuranceRecord> records) {
-        Map<Integer, List<Double>> groups = new TreeMap<Integer, List<Double>>();
-        for (int i = 0; i < records.size(); i++) {
-            InsuranceRecord r = records.get(i);
-            List<Double> list = groups.get(r.children);
-            if (list == null) {
-                list = new ArrayList<Double>();
-                groups.put(r.children, list);
-            }
-            list.add(Double.valueOf(r.charges));
-        }
-
-        double prev = Double.MAX_VALUE;
-        Iterator<Integer> it = groups.keySet().iterator();
-        while (it.hasNext()) {
-            int c = it.next();
-            List<Double> list = groups.get(c);
-            double sum = 0.0;
-            for (int j = 0; j < list.size(); j++) sum += list.get(j).doubleValue();
-            double avg = list.size() == 0 ? 0.0 : sum / list.size();
-            double perChild;
-            if (c == 0) perChild = avg;
-            else perChild = avg / c;
-
-            if (perChild > prev) return false;
-            prev = perChild;
-        }
-        return true;
+// === Feature 10: more children ⇒ lower charge per child ===
+public static boolean feature10_lowerChargePerChild(List<InsuranceRecord> records) {
+    Map<Integer, List<Double>> groups = new TreeMap<>();
+    for (InsuranceRecord r : records) {
+        groups.computeIfAbsent(r.children, k -> new ArrayList<>()).add(r.charges);
     }
+
+    double prev = Double.MAX_VALUE; // we expect per-child avg to be nonincreasing as children↑
+    for (int c : groups.keySet()) {
+        List<Double> list = groups.get(c);
+        double sum = 0.0;
+        for (double v : list) sum += v;
+        double avg = list.isEmpty() ? 0.0 : sum / list.size();
+        double perChild = (c == 0) ? avg : avg / c;
+
+        if (perChild > prev) return false; // broke the nonincreasing condition
+        prev = perChild;
+    }
+    return true;
+}
+
+// === Feature 04: vertical BMI histogram ===
+public static Map<Integer, Integer> feature04_bmiBins(List<InsuranceRecord> records, int binSize) {
+    Map<Integer, Integer> bins = new TreeMap<>();
+    for (InsuranceRecord r : records) {
+        int b = ((int) Math.floor(r.bmi / binSize)) * binSize;
+        bins.put(b, bins.getOrDefault(b, 0) + 1);
+    }
+    return bins;
+}
+
+public static void printFeature04(Map<Integer, Integer> bins) {
+    int peak = 1;
+    for (int v : bins.values()) peak = Math.max(peak, v);
+
+    for (int level = peak; level >= 1; level--) {
+        StringBuilder row = new StringBuilder();
+        for (int b : bins.keySet()) {
+            int count = bins.get(b);
+            row.append(count >= level ? " # " : "   ");
+        }
+        System.out.println(row.toString());
+    }
+    StringBuilder base = new StringBuilder();
+    for (int b : bins.keySet()) base.append(String.format("%2d ", b));
+    System.out.println(base.toString());
+}
+
 
     // === Feature 12: south smokers ≥25% more ===
     public static boolean feature12_southSmokers(List<InsuranceRecord> records) {
@@ -379,6 +397,7 @@ public class Driver {
             printFeature02(stats);
 
             //Feature 04
+ feat/08-old-vs-young
         Map<Integer, Integer> bmiBins = Driver.feature04_bmiBins(records, 5);
         System.out.println("\n=== Feature 04: BMI Vertical Histogram (bin=5) ===");
         Driver.printFeature04(bmiBins);
@@ -410,6 +429,11 @@ public class Driver {
             
 
         
+
+            Map<Integer, Integer> bmiBins = Driver.feature04_bmiBins(records, 5);
+            System.out.println("\n=== Feature 04: BMI Vertical Histogram (bin=5) ===");
+            Driver.printFeature04(bmiBins);
+ main
 
             // --- histograms ---
             List<Integer> ages = agesFrom(records);
