@@ -561,12 +561,6 @@ public static void printFeature04(Map<Integer, Integer> bins) {
 
 
             
-            // Feature 08: charges comparison
-            System.out.println("\n=== Feature 08: Avg charges age>=50 at least 2x age<=20 ? ===");
-            boolean f08 = feature08_oldVsYoungCharges(records);
-            System.out.println(f08 ? "TRUE" : "FALSE"); 
-
-
 
             // Additional histograms (ages)
 
