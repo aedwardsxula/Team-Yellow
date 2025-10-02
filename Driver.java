@@ -26,6 +26,7 @@ public class Driver {
             this.region = region;
             this.charges = charges;
         }
+        }
 
         @Override
         public String toString() {
@@ -67,7 +68,6 @@ public class Driver {
     }
 
     // ==== HISTOGRAM UTILITIES ====
-
     static List<Integer> agesFrom(List<InsuranceRecord> records) {
         List<Integer> ages = new ArrayList<>(records.size());
         for (InsuranceRecord r : records) ages.add(r.age);
@@ -133,7 +133,6 @@ public class Driver {
     }
 
     // ==== NEW: CHILDREN COUNTS ====
-
     /** Returns counts keyed by number of children (0,1,2,...) sorted ascending. */
     static Map<Integer,Integer> childrenCounts(List<InsuranceRecord> records) {
         Map<Integer,Integer> counts = new TreeMap<>();
@@ -142,8 +141,14 @@ public class Driver {
         }
         return counts;
     }
+
+
+    // FEATURE 02: SUMMARY STATS (age, bmi, children, charges)
+    static class Stats {
+
     // FEATURE 02: SUMMARY STATS (age, bmi, children, charges) 
      static class Stats {
+
         long count = 0;
         double sum = 0.0;
         double min = Double.POSITIVE_INFINITY;
@@ -191,20 +196,64 @@ public class Driver {
     }
 
 
+    // === Feature 04: vertical BMI histogram ===
+    public static Map<Integer, Integer> feature04_bmiBins(List<InsuranceRecord> records, int binSize) {
+        Map<Integer, Integer> bins = new TreeMap<>();
+        for (InsuranceRecord r : records) {
+            int b = ((int) Math.floor(r.bmi / binSize)) * binSize;
+            bins.put(b, bins.getOrDefault(b, 0) + 1);
+        }
+        return bins;
+    }
+
+    public static void printFeature04(Map<Integer, Integer> bins) {
+        int peak = 1;
+        for (int v : bins.values()) peak = Math.max(peak, v);
+
+        for (int level = peak; level >= 1; level--) {
+            StringBuilder row = new StringBuilder();
+            for (int b : bins.keySet()) {
+                int count = bins.get(b);
+                row.append(count >= level ? " # " : "   ");
+            }
+            System.out.println(row);
+        }
+        StringBuilder base = new StringBuilder();
+        for (int b : bins.keySet()) {
+            base.append(String.format("%2d ", b));
+        }
+        System.out.println(base);
+    }
+
+
     // === Feature 06: smokers vs non-smokers (vertical histogram) ===
     public static Map<String, Integer> feature06_smokerCounts(List<InsuranceRecord> records) {
-        Map<String, Integer> counts = new LinkedHashMap<String, Integer>();
+        Map<String, Integer> counts = new LinkedHashMap<>();
         counts.put("smoker", 0);
         counts.put("non-smoker", 0);
-        for (int i = 0; i < records.size(); i++) {
-            InsuranceRecord r = records.get(i);
-            if (r.smoker.equalsIgnoreCase("yes")) {
+        for (InsuranceRecord r : records) {
+            if ("yes".equalsIgnoreCase(r.smoker)) {
                 counts.put("smoker", counts.get("smoker") + 1);
             } else {
                 counts.put("non-smoker", counts.get("non-smoker") + 1);
             }
         }
         return counts;
+    }
+
+    public static void printFeature06(Map<String, Integer> counts) {
+        int max = 1;
+        for (int v : counts.values()) max = Math.max(max, v);
+
+        for (int level = max; level >= 1; level--) {
+            StringBuilder row = new StringBuilder();
+            for (String k : counts.keySet()) {
+                int c = counts.get(k);
+                row.append(c >= level ? " # " : "   ");
+            }
+            System.out.println(row);
+        }
+        System.out.println(" S   NS ");
     }
 
     // === Feature 08: charges >=50 vs <=20 ===
@@ -214,45 +263,19 @@ public class Driver {
         int oldCount = 0;
         int youngCount = 0;
 
-        for (int i = 0; i < records.size(); i++) {
-            InsuranceRecord r = records.get(i);
-            if (r.age >= 50) {
-                oldSum += r.charges;
-                oldCount++;
-            }
-            if (r.age <= 20) {
-                youngSum += r.charges;
-                youngCount++;
-            }
+        for (InsuranceRecord r : records) {
+            if (r.age >= 50) { oldSum += r.charges; oldCount++; }
+            if (r.age <= 20) { youngSum += r.charges; youngCount++; }
         }
         if (oldCount == 0 || youngCount == 0) return false;
 
         double oldAvg = oldSum / oldCount;
         double youngAvg = youngSum / youngCount;
+        
         return oldAvg >= 2.0 * youngAvg;
     }
 
-    public static void printFeature06(Map<String, Integer> counts) {
-        int max = 1;
-        Iterator<Integer> itValues = counts.values().iterator();
-        while (itValues.hasNext()) {
-            int v = itValues.next();
-            if (v > max) max = v;
-        }
-
-        for (int level = max; level >= 1; level--) {
-            StringBuilder row = new StringBuilder();
-            Iterator<String> itKeys = counts.keySet().iterator();
-            while (itKeys.hasNext()) {
-                String k = itKeys.next();
-                int c = counts.get(k);
-                if (c >= level) row.append(" # ");
-                else row.append("   ");
-            }
-            System.out.println(row.toString());
-        }
-        System.out.println(" S   NS ");
-    }
+    
 
 // === Feature 10: more children ⇒ lower charge per child ===
 public static boolean feature10_lowerChargePerChild(List<InsuranceRecord> records) {
@@ -467,9 +490,20 @@ public static void printFeature04(Map<Integer, Integer> bins) {
                 System.out.printf("#%d %s%n", i + 1, records.get(i));
             }
 
-             // --- FEATURE 02: stats ---
+            // Feature 02: summary stats
             Map<String, Stats> stats = computeFeature02Stats(records);
             printFeature02(stats);
+
+
+            // Feature 04: BMI vertical histogram (bin=5)
+            Map<Integer, Integer> bmiBins = feature04_bmiBins(records, 5);
+            System.out.println("\n=== Feature 04: BMI Vertical Histogram (bin=5) ===");
+            printFeature04(bmiBins);
+
+            // Feature 06: smokers vs non-smokers
+            Map<String, Integer> smokeCounts = feature06_smokerCounts(records);
+            System.out.println("\n=== Feature 06: Smokers vs Non-Smokers (Vertical) ===");
+            printFeature06(smokeCounts);
 
             //Feature 04
  
@@ -526,9 +560,16 @@ public static void printFeature04(Map<Integer, Integer> bins) {
         Driver.feature20_regressionBMI(records);
 
 
-            
 
-        
+            
+            // Feature 08: charges comparison
+            System.out.println("\n=== Feature 08: Avg charges age>=50 at least 2x age<=20 ? ===");
+            boolean f08 = feature08_oldVsYoungCharges(records);
+            System.out.println(f08 ? "TRUE" : "FALSE"); 
+
+
+
+            // Additional histograms (ages)
 
             bmiBins = Driver.feature04_bmiBins(records, 5);
             System.out.println("\n=== Feature 04: BMI Vertical Histogram (bin=5) ===");
@@ -536,17 +577,19 @@ public static void printFeature04(Map<Integer, Integer> bins) {
  
 
             // --- histograms ---
+
             List<Integer> ages = agesFrom(records);
             printPerAgeHistogram(ages, 50);
             printBinnedHistogram(ages, 5, 50);
 
-            // --- children counts ---
+            // Children counts
             Map<Integer,Integer> byChildren = childrenCounts(records);
             printChildrenCounts(byChildren);
 
-        } catch (IOException e) {
-            System.err.println("I/O error: " + e.getMessage());
+        } catch (IOException e) {;
             System.exit(1);
         }
     }
 }
+
+          //  System.err.println("I/O error: " + e.getMessage())
