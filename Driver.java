@@ -298,22 +298,6 @@ public static boolean feature10_lowerChargePerChild(List<InsuranceRecord> record
 
 
 
-public static void printFeature04(Map<Integer, Integer> bins) {
-    int peak = 1;
-    for (int v : bins.values()) peak = Math.max(peak, v);
-
-    for (int level = peak; level >= 1; level--) {
-        StringBuilder row = new StringBuilder();
-        for (int b : bins.keySet()) {
-            int count = bins.get(b);
-            row.append(count >= level ? " # " : "   ");
-        }
-        System.out.println(row.toString());
-    }
-    StringBuilder base = new StringBuilder();
-    for (int b : bins.keySet()) base.append(String.format("%2d ", b));
-    System.out.println(base.toString());
-}
 
 
     // === Feature 12: south smokers ≥25% more ===
@@ -565,6 +549,8 @@ public static void printFeature04(Map<Integer, Integer> bins) {
             System.exit(1);
         }
     }
+
+}
 
 
           //  System.err.println("I/O error: " + e.getMessage())
