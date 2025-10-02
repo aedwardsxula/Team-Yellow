@@ -341,6 +341,33 @@ public static void printFeature04(Map<Integer, Integer> bins) {
 }
 
 
+    // === Feature 12: south smokers ≥25% more ===
+    public static boolean feature12_southSmokers(List<InsuranceRecord> records) {
+        double southSum = 0.0;
+        double otherSum = 0.0;
+        int southCount = 0;
+        int otherCount = 0;
+
+        for (int i = 0; i < records.size(); i++) {
+            InsuranceRecord r = records.get(i);
+            if (r.smoker.equalsIgnoreCase("yes")) {
+                String reg = r.region.toLowerCase();
+                if (reg.indexOf("south") >= 0) {
+                    southSum += r.charges;
+                    southCount++;
+                } else {
+                    otherSum += r.charges;
+                    otherCount++;
+                }
+            }
+        }
+        if (southCount == 0 || otherCount == 0) return false;
+
+        double southAvg = southSum / southCount;
+        double otherAvg = otherSum / otherCount;
+        return southAvg >= 1.25 * otherAvg;
+    }
+
     // ==== MAIN ====
     public static void main(String[] args) {
         if (args.length != 2) {
@@ -391,6 +418,14 @@ public static void printFeature04(Map<Integer, Integer> bins) {
         boolean f10 = Driver.feature10_lowerChargePerChild(records);
         if (f10) System.out.println("TRUE");
         else System.out.println("FALSE");
+
+        // Feature 12
+        System.out.println("\n=== Feature 12: South smokers pay ≥25% more than other smokers ? ===");
+        boolean f12 = Driver.feature12_southSmokers(records);
+        if (f12) System.out.println("TRUE");
+        else System.out.println("FALSE");
+
+
             
 
         
