@@ -26,6 +26,7 @@ public class Driver {
             this.region = region;
             this.charges = charges;
         }
+        }
 
         @Override
         public String toString() {
