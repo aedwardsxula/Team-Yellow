@@ -1,2 +1,10 @@
+
 *.class
-NUL
+/bin/
+/out/
+.classpath
+.project
+.settings/
+
+
+.DS_Store
