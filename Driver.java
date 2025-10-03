@@ -8,7 +8,7 @@ import java.util.*;
 
 public class Driver {
 
-    static class InsuranceRecord {
+static class InsuranceRecord {
         int age;
         String sex;
         double bmi;
@@ -26,7 +26,7 @@ public class Driver {
             this.region = region;
             this.charges = charges;
         }
-        }
+        
 
         @Override
         public String toString() {
@@ -38,7 +38,7 @@ public class Driver {
     }
 
     // ---- Load first N records from CSV ----
-    static List<InsuranceRecord> loadFirstN(String csvPath, int N) throws IOException {
+    static List<Driver.InsuranceRecord> loadFirstN(String csvPath, int N) throws IOException {
         List<InsuranceRecord> out = new ArrayList<>();
         try (BufferedReader br = Files.newBufferedReader(Paths.get(csvPath))) {
             String header = br.readLine(); // skip header
