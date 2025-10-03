@@ -1,4 +1,4 @@
-package com.example.insurance.io;
+package MedicalInsuranceData.insurance.io;
 
 import com.example.insurance.model.InsuranceRecord;
 import java.io.IOException;
