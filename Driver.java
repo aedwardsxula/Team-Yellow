@@ -465,6 +465,22 @@ static class InsuranceRecord {
         return out;
     }
 
+    static Map<String,Double> feature19_childrenSouthVsNorthAges(List<InsuranceRecord> records) {
+        double sKids=0,nKids=0, sAge=0,nAge=0; int sCnt=0,nCnt=0;
+        for (InsuranceRecord r : records) {
+            String reg = r.region.toLowerCase();
+            if (reg.contains("south")) { sKids+=r.children; sAge+=r.age; sCnt++; }
+            else if (reg.contains("north")) { nKids+=r.children; nAge+=r.age; nCnt++; }
+        }
+        Map<String,Double> out = new LinkedHashMap<>();
+        out.put("south_avg_children", sCnt==0?0:sKids/sCnt);
+        out.put("north_avg_children", nCnt==0?0:nKids/nCnt);
+        out.put("south_avg_age", sCnt==0?0:sAge/sCnt);
+        out.put("north_avg_age", nCnt==0?0:nAge/nCnt);
+        return out;
+    }
+
+
     // ---------- Feature 20: simple linear regression charges ~ BMI ----------
     public static void feature20_regressionBMI(List<InsuranceRecord> records) {
         double sumX = 0.0, sumY = 0.0, sumXY = 0.0, sumX2 = 0.0, sumY2 = 0.0;
