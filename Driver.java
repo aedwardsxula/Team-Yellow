@@ -255,6 +255,27 @@ static class InsuranceRecord {
         System.out.println(" S   NS ");
     }
 
+        static Map<String,Integer> regionCounts(List<InsuranceRecord> records) {
+        Map<String,Integer> m = new TreeMap<>();
+        for (InsuranceRecord r : records) m.merge(r.region.toLowerCase(), 1, Integer::sum);
+        return m;
+    }
+
+
+     static boolean feature07_fairWithin5Percent(List<InsuranceRecord> records) {
+        Map<String,Integer> m = regionCounts(records);
+        int total = m.values().stream().mapToInt(i->i).sum();
+        if (total == 0 || m.isEmpty()) return false;
+        double min = 1.0, max = 0.0;
+        for (int c : m.values()) {
+            double p = c / (double) total;
+            if (p < min) min = p;
+            if (p > max) max = p;
+        }
+        return (max - min) <= 0.05 + 1e-12;
+    }
+
+
     // ---------- Feature 08: >=50 avg charges at least 2x <=20 ----------
     public static boolean feature08_oldVsYoungCharges(List<InsuranceRecord> records) {
         double oldSum = 0.0;
