@@ -395,6 +395,21 @@ static class InsuranceRecord {
         return dist;
     }
 
+    static List<Map.Entry<String,Double>> feature15_regionsByAvgChargesDesc(List<InsuranceRecord> records) {
+        Map<String,double[]> acc = new TreeMap<>();
+        for (InsuranceRecord r : records) {
+            String k = r.region.toLowerCase();
+            acc.computeIfAbsent(k, t -> new double[2]);
+            double[] a = acc.get(k);
+            a[0] += r.charges; a[1] += 1.0;
+        }
+        List<Map.Entry<String,Double>> out = new ArrayList<>();
+        for (Map.Entry<String,double[]> e : acc.entrySet())
+            out.add(Map.entry(e.getKey(), e.getValue()[1]==0?0:e.getValue()[0]/e.getValue()[1]));
+        out.sort((a,b)->Double.compare(b.getValue(), a.getValue()));
+        return out;
+    }
+
     // ---------- Feature 16: avg ages smokers vs non-smokers ----------
     public static Map<String, Double> feature16_avgAges(List<InsuranceRecord> records) {
         double smokerSum = 0.0, nonSum = 0.0;
