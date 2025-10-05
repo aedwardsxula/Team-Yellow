@@ -516,6 +516,29 @@ static class InsuranceRecord {
         }
     }
 
+    static void feature21_regressionChildren(List<InsuranceRecord> records) {
+        int n = records.size();
+        if (n==0) { System.out.println("No data."); return; }
+        double sx=0, sy=0, sxy=0, sx2=0, sy2=0;
+        for (InsuranceRecord r : records) {
+            double x = r.children, y = r.charges;
+            sx+=x; sy+=y; sxy+=x*y; sx2+=x*x; sy2+=y*y;
+        }
+        double denom = n*sx2 - sx*sx;
+        if (denom==0) { System.out.println("Cannot compute regression."); return; }
+        double slope = (n*sxy - sx*sy)/denom;
+        double intercept = (sy - slope*sx)/n;
+        double rnum = n*sxy - sx*sy;
+        double rden = Math.sqrt((n*sx2 - sx*sx)*(n*sy2 - sy*sy));
+        double r = rden==0?0:rnum/rden;
+        System.out.printf("y = %.6f + %.6f*x, r=%.6f%n", intercept, slope, r);
+        for (int i=0;i<22;i++) {
+            double x = i;
+            double y = intercept + slope*x;
+            System.out.printf("x=%.2f y=%.2f%n", x, y);
+        }
+    }
+
     // ---------- Main ----------
     public static void main(String[] args) {
         if (args.length != 2) {
