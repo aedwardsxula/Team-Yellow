@@ -356,6 +356,24 @@ static class InsuranceRecord {
         return southAvg >= 1.25 * otherAvg;
     }
 
+    static boolean feature11_smokersHigherAvgAndWider(List<InsuranceRecord> records) {
+        double sSum=0,nSum=0; int sCnt=0,nCnt=0;
+        double sMin=Double.POSITIVE_INFINITY,sMax=Double.NEGATIVE_INFINITY;
+        double nMin=Double.POSITIVE_INFINITY,nMax=Double.NEGATIVE_INFINITY;
+        for (InsuranceRecord r : records) {
+            if ("yes".equalsIgnoreCase(r.smoker)) {
+                sSum += r.charges; sCnt++; if (r.charges<sMin) sMin=r.charges; if (r.charges>sMax) sMax=r.charges;
+            } else {
+                nSum += r.charges; nCnt++; if (r.charges<nMin) nMin=r.charges; if (r.charges>nMax) nMax=r.charges;
+            }
+        }
+        if (sCnt==0 || nCnt==0) return false;
+        double sAvg = sSum/sCnt, nAvg = nSum/nCnt;
+        double sRange = sMax - sMin, nRange = nMax - nMin;
+        return sAvg > nAvg && sRange > nRange;
+    }
+
+
     // ---------- Feature 14: smoker age distribution ----------
     public static Map<Integer, Integer> feature14_smokerAgeDist(List<InsuranceRecord> records) {
         Map<Integer, Integer> dist = new TreeMap<>();
