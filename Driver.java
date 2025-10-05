@@ -430,6 +430,20 @@ static class InsuranceRecord {
         return out;
     }
 
+    static double[] feature17_southVsNorthSmokingRatesAndAvgAge(List<InsuranceRecord> records) {
+        int sCount=0,nCount=0,sSmokers=0,nSmokers=0; double sAgeSum=0,nAgeSum=0;
+        for (InsuranceRecord r : records) {
+            String reg = r.region.toLowerCase();
+            if (reg.contains("south")) { sCount++; sAgeSum+=r.age; if ("yes".equalsIgnoreCase(r.smoker)) sSmokers++; }
+            else if (reg.contains("north")) { nCount++; nAgeSum+=r.age; if ("yes".equalsIgnoreCase(r.smoker)) nSmokers++; }
+        }
+        double sRate = sCount==0?0:(sSmokers/(double)sCount);
+        double nRate = nCount==0?0:(nSmokers/(double)nCount);
+        double sAvgAge = sCount==0?0:(sAgeSum/sCount);
+        return new double[]{sRate, nRate, sAvgAge};
+    }
+
+
     // ---------- Feature 18: avg BMI south vs north ----------
     public static Map<String, Double> feature18_bmiSouthNorth(List<InsuranceRecord> records) {
         double southSum = 0.0, northSum = 0.0;
