@@ -558,6 +558,9 @@ static class InsuranceRecord {
 
         try {
             List<InsuranceRecord> records = loadFirstN(path, N);
+
+            System.out.println("=== Feature 01: Stored First N Records ===");
+
             System.out.println("Stored " + records.size() + " records:");
             for (int i = 0; i < records.size(); i++) {
                 System.out.printf("#%d %s%n", i + 1, records.get(i));
@@ -576,6 +579,16 @@ static class InsuranceRecord {
             Map<String, Integer> smokeCounts = feature06_smokerCounts(records);
             System.out.println("\n=== Feature 06: Smokers vs Non-Smokers (Vertical) ===");
             printFeature06(smokeCounts);
+
+            System.out.println("\n=== Feature 07: Region Fairness (≤5% spread) ===");
+            Map<String,Integer> rc = regionCounts(records);
+            int total = rc.values().stream().mapToInt(i->i).sum();
+            for (Map.Entry<String,Integer> e : rc.entrySet()) {
+                double p = total==0?0:(e.getValue()/(double)total)*100.0;
+                System.out.printf("%-10s : %4d (%.2f%%)%n", e.getKey(), e.getValue(), p);
+            }
+            System.out.println(feature07_fairWithin5Percent(records) ? "FAIR: TRUE" : "FAIR: FALSE");
+
 
             // Feature 08
             System.out.println("\n=== Feature 08: Avg charges age>=50 at least 2x age<=20 ? ===");
