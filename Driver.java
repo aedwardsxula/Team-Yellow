@@ -373,6 +373,16 @@ static class InsuranceRecord {
         return sAvg > nAvg && sRange > nRange;
     }
 
+    static boolean feature13_smokersLowerBmi(List<InsuranceRecord> records) {
+        double sSum=0,nSum=0; int sCnt=0,nCnt=0;
+        for (InsuranceRecord r : records) {
+            if ("yes".equalsIgnoreCase(r.smoker)) { sSum+=r.bmi; sCnt++; }
+            else { nSum+=r.bmi; nCnt++; }
+        }
+        if (sCnt==0 || nCnt==0) return false;
+        return (sSum/sCnt) < (nSum/nCnt);
+    }
+
 
     // ---------- Feature 14: smoker age distribution ----------
     public static Map<Integer, Integer> feature14_smokerAgeDist(List<InsuranceRecord> records) {
