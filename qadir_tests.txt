@@ -1,34 +1,36 @@
 Test 1: Alternative case for sort_patients
-    - Sort the patients by whether or not they smoke using the sort_patients class
+    - Sort the patients by whether or not they smoke using the sort_patients class.
 
 Test 2: Failing case for list_creator
-    - Input an attribute that is not given as an attribute for the Patient object into the list_creator class
+    - Input an attribute that is not given as an attribute for the Patient object into the list_creator class.
 
 Test 3: Determining fairness based on a list entered after using sort_patients
     - Select a region and input it and the patient list into the sort_patients class, then
-    input that list into the Fairness class
+    input that list into the Fairness class.
 
 Test 4: Failing case for stat_calculator
     - Input a sting attribute for the stat_calculator class to cycle through, it should return an error
-    message since the attribute entered is a string type object
+    message since the attribute entered is a string type object.
 
 Test 5: Histogram failure case
-    - Input horizontal and vertical orientation for the histogram class, the program should return an error
+    - Input horizontal and vertical orientation for the histogram class, the program should return an error.
     message since it cannot take both inputs
 
 Test 6: Conditional average failing case
-    - Enter an unlisted attribute into the conditional average class
+    - Enter an unlisted attribute into the conditional average class.
 
 Test 7: Coupling amoungst classes
-    - Attempt to use the display_patients from the  method into the Fairness class it should output the lists fairness
+    - Attempt to use the display_patients from the  method into the Fairness class it should output the lists fairness.
 
 Test 8: Indeterminate case with Fairness class
     - Input a list where the patients integer values have differentiation less than 5%, in which case the output should
-    be an error message since the class can only return a boolean through the is_fair method
+    be an error message since the class can only return a boolean through the is_fair method.
 
-Test 9: 
-    -
+Test 9: Verifying the count method in the list_creator class
+    - Create a list using the list_creator class and verify that the count method works properly by counting the items in
+    the list using the display_patients method.
 
-Test 10: 
-    -
+Test 10: Invalid Bin size error
+    - Input a Bin_size greater than the number of patients. An error message should be displayed, since the a histogram cannot
+    be formed without varying Bin sizes.
 
