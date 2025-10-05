@@ -11,8 +11,9 @@ import java.util.TreeMap;
 
 public class Driver {
 
-    // ---------- Record type ----------
-    static class InsuranceRecord {
+
+static class InsuranceRecord {
+
         int age;
         String sex;
         double bmi;
@@ -40,8 +41,10 @@ public class Driver {
         }
     }
 
-    // ---------- Load first N records from CSV ----------
-    static List<InsuranceRecord> loadFirstN(String csvPath, int N) throws IOException {
+
+    // ---- Load first N records from CSV ----
+    static List<Driver.InsuranceRecord> loadFirstN(String csvPath, int N) throws IOException {
+
         List<InsuranceRecord> out = new ArrayList<>();
         try (BufferedReader br = Files.newBufferedReader(Paths.get(csvPath))) {
             String header = br.readLine(); // skip header
