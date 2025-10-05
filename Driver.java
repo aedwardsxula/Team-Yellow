@@ -500,15 +500,8 @@ static class InsuranceRecord {
         }
     }
 
-<<<<<<< HEAD
-    
-
-     
 
     // ==== MAIN ====
-=======
-    // ---------- Main ----------
->>>>>>> upstream/main
     public static void main(String[] args) {
         if (args.length != 2) {
             System.err.println("Usage: java Driver <path-to-insurance.csv> <N>");
@@ -576,15 +569,13 @@ static class InsuranceRecord {
             System.out.printf("south_avg_bmi: %.2f%n", f18.get("south_avg_bmi"));
             System.out.printf("north_avg_bmi: %.2f%n", f18.get("north_avg_bmi"));
 
-<<<<<<< HEAD
-         
+        // Feature 20
+        System.out.println("\n=== Feature 20: Regression charges ~ BMI ===");
+        Driver.feature20_regressionBMI(records);
 
 
-=======
-            // Feature 20
-            System.out.println("\n=== Feature 20: Regression charges ~ BMI ===");
-            feature20_regressionBMI(records);
->>>>>>> upstream/main
+
+            
 
             // Extra: age histograms + children counts
             List<Integer> ages = agesFrom(records);
