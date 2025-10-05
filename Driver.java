@@ -294,6 +294,21 @@ static class InsuranceRecord {
         return oldAvg >= 2.0 * youngAvg;
     }
 
+    static boolean feature09_bmi30to45HasWiderChargeRange(List<InsuranceRecord> records) {
+        double lMin=Double.POSITIVE_INFINITY,lMax=Double.NEGATIVE_INFINITY;
+        double mMin=Double.POSITIVE_INFINITY,mMax=Double.NEGATIVE_INFINITY;
+        double hMin=Double.POSITIVE_INFINITY,hMax=Double.NEGATIVE_INFINITY;
+        boolean l=false,m=false,h=false;
+        for (InsuranceRecord r : records) {
+            if (r.bmi < 30) { l=true; if (r.charges<lMin) lMin=r.charges; if (r.charges>lMax) lMax=r.charges; }
+            else if (r.bmi <= 45) { m=true; if (r.charges<mMin) mMin=r.charges; if (r.charges>mMax) mMax=r.charges; }
+            else { h=true; if (r.charges<hMin) hMin=r.charges; if (r.charges>hMax) hMax=r.charges; }
+        }
+        double lr = l ? lMax - lMin : 0, mr = m ? mMax - mMin : 0, hr = h ? hMax - hMin : 0;
+        return mr > lr && mr > hr;
+    }
+
+
     // ---------- Feature 10: more children ⇒ lower charge per child (monotone?) ----------
     public static boolean feature10_lowerChargePerChild(List<InsuranceRecord> records) {
         Map<Integer, List<Double>> groups = new TreeMap<>();
