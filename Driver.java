@@ -439,6 +439,9 @@ public static boolean feature10_lowerChargePerChild(List<InsuranceRecord> record
         }
     }
 
+    
+
+     
 
     // ==== MAIN ====
     public static void main(String[] args) {
@@ -524,6 +527,9 @@ public static boolean feature10_lowerChargePerChild(List<InsuranceRecord> record
         System.out.println("\n=== Feature 20: Regression charges ~ BMI ===");
         Driver.feature20_regressionBMI(records);
 
+         
+
+
 
 
             
@@ -551,6 +557,8 @@ public static boolean feature10_lowerChargePerChild(List<InsuranceRecord> record
     }
 
 }
+
+
 
 
           //  System.err.println("I/O error: " + e.getMessage())
