@@ -53,4 +53,18 @@ Test 7.2 — Uneven Distribution
 Arrange: 6 records, 4 from “south” and 2 from “north.”
 Act: Run feature07_fairWithin5Percent(records)
 Assert: Returns FALSE.
+Result: Success 
+
+F-09 BMI Range Comparison
+
+Test 9.1 — 30–45 Has Widest Range
+Arrange: Assign BMI/charges to create wider middle range.
+Act: Run feature09_bmi30to45HasWiderChargeRange(records)
+Assert: Returns TRUE.
+Result: Success
+
+Test 9.2 — Narrow Middle Range
+Arrange: Use lower charge variation in 30–45.
+Act: Run same function.
+Assert: Returns FALSE.
 Result: Success
