@@ -125,4 +125,18 @@ Act: Same function.
 Assert: Output shows equal rates.
 Result: Success
 
+F-19 South vs North Children and Age
+
+Test 19.1 — South Has More Kids
+Arrange: Southerners have avg 3 kids, northerners avg 1.
+Act: Call feature19_childrenSouthVsNorthAges(records)
+Assert: south_avg_children > north_avg_children.
+Result: Success
+
+Test 19.2 — Equal Kids
+Arrange: Equal number of children.
+Act: Same function.
+Assert: Output FALSE.
+Result: Success
+
 
