@@ -44,6 +44,21 @@ Act: Call Driver.printPerAgeHistogram([], 50)
 Assert: Output should say No ages to plot.
 Result: Success 
 
+FEATURE 04 — Vertical BMI Histogram (bin size = 5)
+Test 4.1 — Bins by floor of bin size
+Arrange:
+  Data = [
+    (25, m, 25.0, 0, no,  north, 1000),   // bin 25
+    (45, f, 30.0, 1, no,  north, 2000),   // bin 30
+    (30, m, 28.0, 2, yes, south, 3000)    // bin 25
+  ]
+Act:
+  Build BMI bins with binSize=5.
+Expected Result:
+  Bin 25 => 2
+  Bin 30 => 1
+  No other bins.
+
 F-05 Children Counts
 
 Test 5.1 — Count by Children Number
