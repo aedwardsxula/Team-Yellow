@@ -82,3 +82,19 @@ Arrange: Smokers and non-smokers have same charge range.
 Act: Call same.
 Assert: Output FALSE.
 Result: Success
+
+F-13 Smokers Lower BMI
+
+Test 13.1 — Smokers Have Lower Avg BMI
+Arrange: Set smokers’ BMI < non-smokers.
+Act: Run feature13_smokersLowerBmi(records)
+Assert: Output TRUE.
+Result: Success
+
+Test 13.2 — Opposite Case
+Arrange: Smokers’ BMI > non-smokers.
+Act: Run same function.
+Assert: Output FALSE.
+Result: Success
+
+
