@@ -242,6 +242,19 @@ Act: Run same.
 Assert: Order stable (alphabetical).
 Result: Success
 
+
+FEATURE 16 — Avg age: smokers vs non-smokers
+Test 16.1 — Computes separate means
+Arrange:
+  Smokers ages: 20, 40 → avg 30
+  Non-smokers ages: 30 → avg 30
+Act:
+  Compute smoker_avg_age and nonsmoker_avg_age.
+Expected Result:
+  smoker_avg_age = 30.0
+  nonsmoker_avg_age = 30.0
+
+  
 F-17 South vs North Smoking
 
 Test 17.1 — South Has Higher Rate
