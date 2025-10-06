@@ -516,6 +516,10 @@ static class InsuranceRecord {
         }
     }
 
+
+
+    // ==== MAIN ====
+
     static void feature21_regressionChildren(List<InsuranceRecord> records) {
         int n = records.size();
         if (n==0) { System.out.println("No data."); return; }
@@ -540,6 +544,7 @@ static class InsuranceRecord {
     }
 
     // ---------- Main ----------
+
     public static void main(String[] args) {
         if (args.length != 2) {
             System.err.println("Usage: java Driver <path-to-insurance.csv> <N>");
@@ -661,6 +666,9 @@ static class InsuranceRecord {
             System.out.println("\n=== Feature 20: Regression charges ~ BMI ===");
             feature20_regressionBMI(records);
 
+            // Extra: age histograms + children counts
+            
+            printBinnedHistogram(ages, 5, 50);
             System.out.println("\n=== Feature 21: Regression charges ~ children (r + 22 predictions) ===");
             feature21_regressionChildren(records);
 
@@ -675,6 +683,8 @@ static class InsuranceRecord {
         }
     }
 }
+
+
 
 
           //  System.err.println("I/O error: " + e.getMessage())
