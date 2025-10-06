@@ -111,4 +111,18 @@ Act: Run same.
 Assert: Order stable (alphabetical).
 Result: Success
 
+F-17 South vs North Smoking
+
+Test 17.1 — South Has Higher Rate
+Arrange: Make southern region have higher smoker ratio.
+Act: Run feature17_southVsNorthSmokingRatesAndAvgAge(records)
+Assert: Returns array where south rate > north rate.
+Result: Success
+
+Test 17.2 — Equal Rates
+Arrange: Make smoker ratios equal.
+Act: Same function.
+Assert: Output shows equal rates.
+Result: Success
+
 
