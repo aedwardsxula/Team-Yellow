@@ -164,7 +164,7 @@ Act:
   Same check.
 Expected Result:
   Increase detected ⇒ FALSE
-  
+
 
 
 F-11 Smokers Higher Avg & Wider Range
@@ -180,6 +180,25 @@ Arrange: Smokers and non-smokers have same charge range.
 Act: Call same.
 Assert: Output FALSE.
 Result: Success
+
+FEATURE 12 — South smokers pay ≥ 25% more than other smokers?
+Test 12.1 — TRUE when ≥25% higher
+Arrange:
+  South smokers: 100, 150 (avg 125)
+  Other smokers: 100 (avg 100)
+Act:
+  Compare averages for smokers: south vs other regions.
+Expected Result:
+  125 ≥ 1.25 × 100 ⇒ TRUE
+
+Test 12.2 — FALSE when <25% higher
+Arrange:
+  South smokers: 100, 120 (avg 110)
+  Other smokers: 100 (avg 100)
+Act:
+  Compare averages.
+Expected Result:
+  110 < 1.25 × 100 ⇒ FALSE
 
 F-13 Smokers Lower BMI
 
