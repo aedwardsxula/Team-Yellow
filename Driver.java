@@ -6,8 +6,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 public class Driver {
 
@@ -543,6 +546,131 @@ static class InsuranceRecord {
         }
     }
 
+    // ---------- Feature 22: simple linear regression charges ~ region (ordinal) ----------
+    
+     private static final Map<String, Integer> REGION_CODE = new LinkedHashMap<>();
+    static {
+        REGION_CODE.put("northeast", 0);
+        REGION_CODE.put("northwest", 1);
+        REGION_CODE.put("southeast", 2);
+        REGION_CODE.put("southwest", 3);
+    }
+
+    // Container for regression summary
+    static class RegressionStats {
+        int n;
+        double meanX, meanY;
+        double sdX, sdY;
+        double covXY;
+        double r;
+        double a, b; // Model: y = a + b*x
+    }
+
+    // Compute simple linear regression and Pearson r for lists X (charges) and Y (region code)
+    static RegressionStats fitSimpleLinearRegression(List<Double> X, List<Double> Y) {
+        if (X.size() != Y.size()) throw new IllegalArgumentException("X and Y sizes differ.");
+        int n = X.size();
+        double sumX = 0, sumY = 0;
+        for (int i = 0; i < n; i++) { sumX += X.get(i); sumY += Y.get(i); }
+        double meanX = sumX / n, meanY = sumY / n;
+
+        double sxx = 0, syy = 0, sxy = 0;
+        for (int i = 0; i < n; i++) {
+            double dx = X.get(i) - meanX;
+            double dy = Y.get(i) - meanY;
+            sxx += dx * dx;
+            syy += dy * dy;
+            sxy += dx * dy;
+        }
+
+        double varX = sxx / (n - 1);
+        double varY = syy / (n - 1);
+        double sdX = Math.sqrt(varX);
+        double sdY = Math.sqrt(varY);
+        double covXY = sxy / (n - 1);
+
+        double b = covXY / varX;      // slope
+        double a = meanY - b * meanX; // intercept
+        double r = (sdX == 0 || sdY == 0) ? 0.0 : covXY / (sdX * sdY);
+
+        RegressionStats st = new RegressionStats();
+        st.n = n; st.meanX = meanX; st.meanY = meanY;
+        st.sdX = sdX; st.sdY = sdY; st.covXY = covXY;
+        st.r = r; st.a = a; st.b = b;
+        return st;
+    }
+
+    // Build X (charges) and Y (region_code) from records
+    static void feature22_regressionChargesVsRegion(List<InsuranceRecord> records, List<Double> newCharges) {
+        List<Double> X = new ArrayList<>();
+        List<Double> Y = new ArrayList<>();
+        for (InsuranceRecord r : records) {
+            Integer code = REGION_CODE.get(r.region.toLowerCase());
+            if (code != null) {
+                X.add(r.charges);
+                Y.add(code.doubleValue());
+            }
+        }
+        if (X.size() < 2) {
+            System.out.println("=== Feature 22: Regression charges ~ region_code ===");
+            System.out.println("Not enough data to compute regression.");
+            return;
+        }
+
+        RegressionStats stats = fitSimpleLinearRegression(X, Y);
+
+        System.out.println("\n=== Feature 22: Regression of region_code ~ charges ===");
+        System.out.printf(Locale.US, "N = %d%n", stats.n);
+        System.out.printf(Locale.US, "Mean(charges) = %.4f, SD(charges) = %.4f%n", stats.meanX, stats.sdX);
+        System.out.printf(Locale.US, "Mean(region_code) = %.4f, SD(region_code) = %.4f%n", stats.meanY, stats.sdY);
+        System.out.printf(Locale.US, "Pearson r = %.6f%n", stats.r);
+        System.out.printf(Locale.US, "Model: y = a + b*x  =>  a = %.8f, b = %.12f%n", stats.a, stats.b);
+        System.out.println("Region code mapping: " + REGION_CODE);
+
+        System.out.println("\nApply regression to 33 charges (x) and output (x, y_hat):");
+        if (newCharges == null || newCharges.isEmpty()) {
+            newCharges = demo33Charges(); // fallback to built-in 33 values
+            System.out.println("(Note) Using built-in 33 demo charges.");
+        }
+        if (newCharges.size() != 33) {
+            System.out.println("(Note) Received " + newCharges.size() + " values; expected 33.");
+        }
+        System.out.println("x (charges), y_hat (predicted region_code)");
+        for (double x : newCharges) {
+            double yhat = stats.a + stats.b * x;
+            System.out.printf(Locale.US, "%.2f, %.6f%n", x, yhat);
+        }
+    }
+
+    // Read 33 charges from a file (one per line). If path is null or unreadable, return empty list.
+    static List<Double> readChargesFile(String path) {
+        if (path == null) return List.of();
+        try {
+            return Files.readAllLines(Paths.get(path)).stream()
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty() && !s.startsWith("#"))
+                    .map(s -> {
+                        try { return Double.parseDouble(s); }
+                        catch (NumberFormatException e) { return null; }
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            System.err.println("Warning (Feature 22): couldn't read new charges file: " + e.getMessage());
+            return List.of();
+        }
+    }
+
+    // Built-in list of exactly 33 demo charges
+    static List<Double> demo33Charges() {
+        return Arrays.asList(
+            1234.56, 2450.00, 3120.75, 4088.90, 5123.10, 6234.55, 7350.40, 8120.00, 9055.25, 10010.99,
+            11234.80, 12500.00, 13890.45, 14999.99, 16010.10, 17222.22, 18500.75, 19999.95, 21005.00, 22345.67,
+            23500.00, 24890.30, 26000.00, 27550.40, 28999.00, 30010.10, 31555.55, 32999.99, 34000.00, 35555.55,
+            36999.99, 38010.00, 39500.25
+        );
+    }
+
     // ---------- Main ----------
 
     public static void main(String[] args) {
@@ -673,9 +801,13 @@ static class InsuranceRecord {
             feature21_regressionChildren(records);
 
         
-
+            System.out.println("\n=== Feature 22: Regression region_code ~ charges (r + 33 predictions) ===");
             Map<Integer, Integer> byChildren = childrenCounts(records);
             printChildrenCounts(byChildren);
+
+            List<Double> newCharges = readChargesFile(args.length == 3 ? args[2] : null);
+            System.out.println("\n=== Feature 22: Regression (region_code ~ charges) + Pearson r + 33 predictions ===");
+            feature22_regressionChargesVsRegion(records, newCharges);
 
         } catch (IOException e) {
             System.err.println("I/O error: " + e.getMessage());
