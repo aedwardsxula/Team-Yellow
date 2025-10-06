@@ -101,6 +101,31 @@ Act: Run feature07_fairWithin5Percent(records)
 Assert: Returns FALSE.
 Result: Success 
 
+FEATURE 08 — Avg charges (age ≥ 50) at least 2× (age ≤ 20)?
+Test 8.1 — TRUE when at least double
+Arrange:
+  Data = [
+    (18, m, 22.0, 0, no, north, 1000),
+    (19, m, 23.0, 0, no, north, 1000),
+    (60, f, 28.0, 0, no, south, 4000)
+  ]
+Act:
+  Compare avg charges for age ≥50 vs ≤20.
+Expected Result:
+  oldAvg=4000, youngAvg=1000 ⇒ TRUE
+
+Test 8.2 — FALSE when not double
+Arrange:
+  Data = [
+    (18, m, 22.0, 0, no, north, 2000),
+    (55, f, 28.0, 0, no, south, 3000)
+  ]
+Act:
+  Compare avg charges.
+Expected Result:
+  oldAvg=3000, youngAvg=2000 ⇒ FALSE
+
+
 F-09 BMI Range Comparison
 
 Test 9.1 — 30–45 Has Widest Range
