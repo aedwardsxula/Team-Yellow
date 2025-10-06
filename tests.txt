@@ -25,4 +25,18 @@ Test 3.2 — No Ages in List
 Arrange: Use empty list.
 Act: Call Driver.printPerAgeHistogram([], 50)
 Assert: Output should say No ages to plot.
+Result: Success 
+
+F-05 Children Counts
+
+Test 5.1 — Count by Children Number
+Arrange: Create records with 0, 1, 2, 2 children.
+Act: Run Driver.childrenCounts(records)
+Assert: Output should show children=0→1, 1→1, 2→2.
+Result: Success
+
+Test 5.2 — Empty List
+Arrange: Use no records.
+Act: Call Driver.childrenCounts([])
+Assert: Output should show Total records by number of children: and nothing else.
 Result: Success
