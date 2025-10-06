@@ -13,6 +13,23 @@ Act: Run Driver.loadFirstN("empty.csv", 3)
 Assert: Output should show I/O error: Empty CSV (no header).
 Result: Success 
 
+FEATURE 02 — Basic Statistics (count, min, max, avg)
+Test 2.1 — Computes correct stats on a small sample
+Arrange:
+  Data = [
+    (20, m, 25.0, 0, no,  north, 1000),
+    (50, f, 30.0, 2, yes, south, 3000),
+    (30, m, 28.0, 1, no,  north, 2000)
+  ]
+Act:
+  Compute stats for columns: age, bmi, children, charges.
+Expected Result:
+  age:     count=3, min=20,   max=50,   avg=33.3333
+  bmi:     count=3, min=25.0, max=30.0, avg=27.6667
+  children:count=3, min=0,    max=2,    avg=1.0000
+  charges: count=3, min=1000, max=3000, avg=2000.0000
+
+
 F-03 Age Histogram (Per Age)
 
 Test 3.1 — Plot Histogram from Sample Data
