@@ -68,3 +68,89 @@ Arrange: Use lower charge variation in 30–45.
 Act: Run same function.
 Assert: Returns FALSE.
 Result: Success
+
+F-11 Smokers Higher Avg & Wider Range
+
+Test 11.1 — Smokers Pay More
+Arrange: Set smokers with higher avg and range of charges.
+Act: Call feature11_smokersHigherAvgAndWider(records)
+Assert: Output should be TRUE.
+Result: Success
+
+Test 11.2 — Equal Range
+Arrange: Smokers and non-smokers have same charge range.
+Act: Call same.
+Assert: Output FALSE.
+Result: Success
+
+F-13 Smokers Lower BMI
+
+Test 13.1 — Smokers Have Lower Avg BMI
+Arrange: Set smokers’ BMI < non-smokers.
+Act: Run feature13_smokersLowerBmi(records)
+Assert: Output TRUE.
+Result: Success
+
+Test 13.2 — Opposite Case
+Arrange: Smokers’ BMI > non-smokers.
+Act: Run same function.
+Assert: Output FALSE.
+Result: Success
+
+F-15 Regions by Average Charges
+
+Test 15.1 — Sorted Descending
+Arrange: Regions with known averages (south > north > east).
+Act: Run feature15_regionsByAvgChargesDesc(records)
+Assert: Verify order of output list descending by avg charge.
+Result: Success
+
+Test 15.2 — Equal Averages
+Arrange: All regions same charge avg.
+Act: Run same.
+Assert: Order stable (alphabetical).
+Result: Success
+
+F-17 South vs North Smoking
+
+Test 17.1 — South Has Higher Rate
+Arrange: Make southern region have higher smoker ratio.
+Act: Run feature17_southVsNorthSmokingRatesAndAvgAge(records)
+Assert: Returns array where south rate > north rate.
+Result: Success
+
+Test 17.2 — Equal Rates
+Arrange: Make smoker ratios equal.
+Act: Same function.
+Assert: Output shows equal rates.
+Result: Success
+
+F-19 South vs North Children and Age
+
+Test 19.1 — South Has More Kids
+Arrange: Southerners have avg 3 kids, northerners avg 1.
+Act: Call feature19_childrenSouthVsNorthAges(records)
+Assert: south_avg_children > north_avg_children.
+Result: Success
+
+Test 19.2 — Equal Kids
+Arrange: Equal number of children.
+Act: Same function.
+Assert: Output FALSE.
+Result: Success
+
+F-21 Regression: Children vs Charges
+
+Test 21.1 — Linear Trend Exists
+Arrange: Synthetic dataset where charges rise with children count.
+Act: Run feature21_regressionChildren(records)
+Assert: Output line “y = intercept + slope*x” with positive slope.
+Result: Success
+
+Test 21.2 — Constant Charges
+Arrange: All charges equal.
+Act: Same function.
+Assert: Output “Cannot compute regression.”
+Result: Success 
+
+
