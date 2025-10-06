@@ -5,3 +5,24 @@ Arrange: Prepare a CSV file with 10 records.
 Act: Run Driver.loadFirstN("insurance.csv", 5)
 Assert: Output should list the first 5 rows only with correct field parsing (Age, Sex, BMI, Children, Smoker, Region, Charges).
 Result: Success
+
+
+Test 1.2 — Empty CSV
+Arrange: Create an empty file.
+Act: Run Driver.loadFirstN("empty.csv", 3)
+Assert: Output should show I/O error: Empty CSV (no header).
+Result: Success 
+
+F-03 Age Histogram (Per Age)
+
+Test 3.1 — Plot Histogram from Sample Data
+Arrange: Provide 5 records with ages 18, 19, 19, 20, 20.
+Act: Call Driver.printPerAgeHistogram(ages, 50)
+Assert: Output should print each age with a bar length scaled to frequency.
+Result: Success
+
+Test 3.2 — No Ages in List
+Arrange: Use empty list.
+Act: Call Driver.printPerAgeHistogram([], 50)
+Assert: Output should say No ages to plot.
+Result: Success
