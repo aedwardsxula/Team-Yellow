@@ -44,6 +44,21 @@ Act: Call Driver.printPerAgeHistogram([], 50)
 Assert: Output should say No ages to plot.
 Result: Success 
 
+FEATURE 04 — Vertical BMI Histogram (bin size = 5)
+Test 4.1 — Bins by floor of bin size
+Arrange:
+  Data = [
+    (25, m, 25.0, 0, no,  north, 1000),   // bin 25
+    (45, f, 30.0, 1, no,  north, 2000),   // bin 30
+    (30, m, 28.0, 2, yes, south, 3000)    // bin 25
+  ]
+Act:
+  Build BMI bins with binSize=5.
+Expected Result:
+  Bin 25 => 2
+  Bin 30 => 1
+  No other bins.
+
 F-05 Children Counts
 
 Test 5.1 — Count by Children Number
@@ -57,6 +72,20 @@ Arrange: Use no records.
 Act: Call Driver.childrenCounts([])
 Assert: Output should show Total records by number of children: and nothing else.
 Result: Success
+
+FEATURE 06 — Vertical Histogram: Smokers vs Non-Smokers
+Test 6.1 — Counts yes vs no
+Arrange:
+  Data = [
+    (30, m, 27.0, 0, no,  north, 1000),
+    (55, f, 31.0, 1, yes, south, 3000),
+    (40, m, 26.0, 2, no,  south, 2000)
+  ]
+Act:
+  Count “smoker” vs “non-smoker”.
+Expected Result:
+  smoker = 1
+  non-smoker = 2
 
 F-07 Region Fairness
 
