@@ -73,6 +73,20 @@ Act: Call Driver.childrenCounts([])
 Assert: Output should show Total records by number of children: and nothing else.
 Result: Success
 
+FEATURE 06 — Vertical Histogram: Smokers vs Non-Smokers
+Test 6.1 — Counts yes vs no
+Arrange:
+  Data = [
+    (30, m, 27.0, 0, no,  north, 1000),
+    (55, f, 31.0, 1, yes, south, 3000),
+    (40, m, 26.0, 2, no,  south, 2000)
+  ]
+Act:
+  Count “smoker” vs “non-smoker”.
+Expected Result:
+  smoker = 1
+  non-smoker = 2
+
 F-07 Region Fairness
 
 Test 7.1 — Fair Distribution
