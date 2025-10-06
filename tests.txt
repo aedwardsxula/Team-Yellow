@@ -68,3 +68,17 @@ Arrange: Use lower charge variation in 30–45.
 Act: Run same function.
 Assert: Returns FALSE.
 Result: Success
+
+F-11 Smokers Higher Avg & Wider Range
+
+Test 11.1 — Smokers Pay More
+Arrange: Set smokers with higher avg and range of charges.
+Act: Call feature11_smokersHigherAvgAndWider(records)
+Assert: Output should be TRUE.
+Result: Success
+
+Test 11.2 — Equal Range
+Arrange: Smokers and non-smokers have same charge range.
+Act: Call same.
+Assert: Output FALSE.
+Result: Success
