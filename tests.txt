@@ -139,4 +139,18 @@ Act: Same function.
 Assert: Output FALSE.
 Result: Success
 
+F-21 Regression: Children vs Charges
+
+Test 21.1 — Linear Trend Exists
+Arrange: Synthetic dataset where charges rise with children count.
+Act: Run feature21_regressionChildren(records)
+Assert: Output line “y = intercept + slope*x” with positive slope.
+Result: Success
+
+Test 21.2 — Constant Charges
+Arrange: All charges equal.
+Act: Same function.
+Assert: Output “Cannot compute regression.”
+Result: Success 
+
 
