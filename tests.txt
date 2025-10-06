@@ -140,6 +140,33 @@ Act: Run same function.
 Assert: Returns FALSE.
 Result: Success
 
+FEATURE 10 — More children ⇒ lower charge per child (non-increasing)
+Test 10.1 — TRUE when non-increasing per child
+Arrange:
+  Data = [
+    (30,m,25.0,0,no,north,4000),  // per-child 4000
+    (35,f,25.0,1,no,north,3000),  // 3000
+    (40,m,25.0,2,no,north,3000),  // 1500
+    (45,f,25.0,3,no,north,2400)   // 800
+  ]
+Act:
+  Compute per-child averages by children count and check monotone non-increase.
+Expected Result:
+  4000 → 3000 → 1500 → 800 ⇒ TRUE
+
+Test 10.2 — FALSE when any increase occurs
+Arrange:
+  Data = [
+    (30,m,25.0,0,no,north,1000),  // 1000
+    (35,f,25.0,1,no,north,2000)   // 2000 (increase)
+  ]
+Act:
+  Same check.
+Expected Result:
+  Increase detected ⇒ FALSE
+
+
+
 F-11 Smokers Higher Avg & Wider Range
 
 Test 11.1 — Smokers Pay More
@@ -153,6 +180,25 @@ Arrange: Smokers and non-smokers have same charge range.
 Act: Call same.
 Assert: Output FALSE.
 Result: Success
+
+FEATURE 12 — South smokers pay ≥ 25% more than other smokers?
+Test 12.1 — TRUE when ≥25% higher
+Arrange:
+  South smokers: 100, 150 (avg 125)
+  Other smokers: 100 (avg 100)
+Act:
+  Compare averages for smokers: south vs other regions.
+Expected Result:
+  125 ≥ 1.25 × 100 ⇒ TRUE
+
+Test 12.2 — FALSE when <25% higher
+Arrange:
+  South smokers: 100, 120 (avg 110)
+  Other smokers: 100 (avg 100)
+Act:
+  Compare averages.
+Expected Result:
+  110 < 1.25 × 100 ⇒ FALSE
 
 F-13 Smokers Lower BMI
 
