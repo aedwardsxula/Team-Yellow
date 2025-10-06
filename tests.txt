@@ -97,4 +97,18 @@ Act: Run same function.
 Assert: Output FALSE.
 Result: Success
 
+F-15 Regions by Average Charges
+
+Test 15.1 — Sorted Descending
+Arrange: Regions with known averages (south > north > east).
+Act: Run feature15_regionsByAvgChargesDesc(records)
+Assert: Verify order of output list descending by avg charge.
+Result: Success
+
+Test 15.2 — Equal Averages
+Arrange: All regions same charge avg.
+Act: Run same.
+Assert: Order stable (alphabetical).
+Result: Success
+
 
