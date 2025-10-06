@@ -338,4 +338,13 @@ Act: Same function.
 Assert: Output “Cannot compute regression.”
 Result: Success 
 
+FEATURE 22 — Simple Linear Regression: charges ~ region
+Test 22.1 — (Guidance) Skip until implementation exists
+Arrange:
+  Decide encoding for region (e.g., one-hot or ordinal) and build a small dataset.
+Act:
+  Run regression when implemented.
+Expected Result:
+  r is computed and 33 predictions are printed as specified.
+
 
