@@ -669,6 +669,10 @@ static class InsuranceRecord {
             // Extra: age histograms + children counts
             
             printBinnedHistogram(ages, 5, 50);
+            System.out.println("\n=== Feature 21: Regression charges ~ children (r + 22 predictions) ===");
+            feature21_regressionChildren(records);
+
+        
 
             Map<Integer, Integer> byChildren = childrenCounts(records);
             printChildrenCounts(byChildren);
