@@ -214,6 +214,20 @@ Act: Run same function.
 Assert: Output FALSE.
 Result: Success
 
+FEATURE 14 — Smoker Age Distribution (age → count)
+Test 14.1 — Only smokers counted; grouped by age
+Arrange:
+  Data = [
+    (20,m,25,0,yes,north,1000),
+    (20,f,25,0,yes,north,1000),
+    (30,m,25,0,yes,north,1000),
+    (30,m,25,0,no, north,1000)   // ignored
+  ]
+Act:
+  Build age→count for smokers.
+Expected Result:
+  {20=2, 30=1}
+
 F-15 Regions by Average Charges
 
 Test 15.1 — Sorted Descending
