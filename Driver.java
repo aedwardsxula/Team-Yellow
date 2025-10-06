@@ -516,6 +516,29 @@ static class InsuranceRecord {
         }
     }
 
+    static void feature21_regressionChildren(List<InsuranceRecord> records) {
+        int n = records.size();
+        if (n==0) { System.out.println("No data."); return; }
+        double sx=0, sy=0, sxy=0, sx2=0, sy2=0;
+        for (InsuranceRecord r : records) {
+            double x = r.children, y = r.charges;
+            sx+=x; sy+=y; sxy+=x*y; sx2+=x*x; sy2+=y*y;
+        }
+        double denom = n*sx2 - sx*sx;
+        if (denom==0) { System.out.println("Cannot compute regression."); return; }
+        double slope = (n*sxy - sx*sy)/denom;
+        double intercept = (sy - slope*sx)/n;
+        double rnum = n*sxy - sx*sy;
+        double rden = Math.sqrt((n*sx2 - sx*sx)*(n*sy2 - sy*sy));
+        double r = rden==0?0:rnum/rden;
+        System.out.printf("y = %.6f + %.6f*x, r=%.6f%n", intercept, slope, r);
+        for (int i=0;i<22;i++) {
+            double x = i;
+            double y = intercept + slope*x;
+            System.out.printf("x=%.2f y=%.2f%n", x, y);
+        }
+    }
+
     // ---------- Main ----------
     public static void main(String[] args) {
         if (args.length != 2) {
@@ -535,6 +558,9 @@ static class InsuranceRecord {
 
         try {
             List<InsuranceRecord> records = loadFirstN(path, N);
+
+            System.out.println("=== Feature 01: Stored First N Records ===");
+
             System.out.println("Stored " + records.size() + " records:");
             for (int i = 0; i < records.size(); i++) {
                 System.out.printf("#%d %s%n", i + 1, records.get(i));
@@ -544,27 +570,55 @@ static class InsuranceRecord {
             Map<String, Stats> stats = computeFeature02Stats(records);
             printFeature02(stats);
 
+            // Feature 03: age horizontal histogram (per age)
+            System.out.println("\n=== Feature 03: Age Horizontal Histogram (per age) ===");
+            List<Integer> ages = agesFrom(records);
+            printPerAgeHistogram(ages, 50);
+
             // Feature 04: BMI vertical histogram (bin=5)
             Map<Integer, Integer> bmiBins = feature04_bmiBins(records, 5);
             System.out.println("\n=== Feature 04: BMI Vertical Histogram (bin=5) ===");
             printFeature04(bmiBins);
+
+            System.out.println("\n=== Feature 05: Age Histograms (per age and binned) ===");
+            printBinnedHistogram(ages, 5, 50);
 
             // Feature 06: smokers vs non-smokers
             Map<String, Integer> smokeCounts = feature06_smokerCounts(records);
             System.out.println("\n=== Feature 06: Smokers vs Non-Smokers (Vertical) ===");
             printFeature06(smokeCounts);
 
+            System.out.println("\n=== Feature 07: Region Fairness (≤5% spread) ===");
+            Map<String,Integer> rc = regionCounts(records);
+            int total = rc.values().stream().mapToInt(i->i).sum();
+            for (Map.Entry<String,Integer> e : rc.entrySet()) {
+                double p = total==0?0:(e.getValue()/(double)total)*100.0;
+                System.out.printf("%-10s : %4d (%.2f%%)%n", e.getKey(), e.getValue(), p);
+            }
+            System.out.println(feature07_fairWithin5Percent(records) ? "FAIR: TRUE" : "FAIR: FALSE");
+
+
             // Feature 08
             System.out.println("\n=== Feature 08: Avg charges age>=50 at least 2x age<=20 ? ===");
             System.out.println(feature08_oldVsYoungCharges(records) ? "TRUE" : "FALSE");
+
+            System.out.println("\n=== Feature 09: BMI 30–45 has widest charge range? ===");
+            System.out.println(feature09_bmi30to45HasWiderChargeRange(records) ? "TRUE" : "FALSE");
 
             // Feature 10
             System.out.println("\n=== Feature 10: More children ⇒ lower charge per child (monotone) ? ===");
             System.out.println(feature10_lowerChargePerChild(records) ? "TRUE" : "FALSE");
 
+            System.out.println("\n=== Feature 11: Smokers higher avg charges AND wider range? ===");
+            System.out.println(feature11_smokersHigherAvgAndWider(records) ? "TRUE" : "FALSE");
+
+
             // Feature 12
             System.out.println("\n=== Feature 12: South smokers pay ≥25% more than other smokers ? ===");
             System.out.println(feature12_southSmokers(records) ? "TRUE" : "FALSE");
+
+            System.out.println("\n=== Feature 13: Do smokers average lower BMI? ===");
+            System.out.println(feature13_smokersLowerBmi(records) ? "TRUE" : "FALSE");
 
             // Feature 14
             System.out.println("\n=== Feature 14: Smoker Age Distribution (age -> count) ===");
@@ -572,11 +626,22 @@ static class InsuranceRecord {
                 System.out.println(e.getKey() + " -> " + e.getValue());
             }
 
+            // Feature 15
+                        System.out.println("\n=== Feature 15: Regions by Average Charges (desc) ===");
+            for (Map.Entry<String,Double> e : feature15_regionsByAvgChargesDesc(records))
+                System.out.printf("%-12s -> %.2f%n", e.getKey(), e.getValue());
+
             // Feature 16
             System.out.println("\n=== Feature 16: Avg Age (smokers vs non-smokers) ===");
             Map<String, Double> f16 = feature16_avgAges(records);
             System.out.printf("smoker_avg_age: %.2f%n", f16.get("smoker_avg_age"));
             System.out.printf("nonsmoker_avg_age: %.2f%n", f16.get("nonsmoker_avg_age"));
+
+            System.out.println("\n=== Feature 17: Southerners smoke more than northerners? If yes, at what avg age ===");
+            double[] s17 = feature17_southVsNorthSmokingRatesAndAvgAge(records);
+            System.out.printf("south_smoke_rate=%.6f north_smoke_rate=%.6f%n", s17[0], s17[1]);
+            if (s17[0] > s17[1]) System.out.printf("TRUE at south average age: %.2f%n", s17[2]);
+            else System.out.println("FALSE");
 
             // Feature 18
             System.out.println("\n=== Feature 18: Avg BMI (south vs north) ===");
@@ -584,13 +649,23 @@ static class InsuranceRecord {
             System.out.printf("south_avg_bmi: %.2f%n", f18.get("south_avg_bmi"));
             System.out.printf("north_avg_bmi: %.2f%n", f18.get("north_avg_bmi"));
 
+            System.out.println("\n=== Feature 19: Southerners average more children than northerners? At what avg age ===");
+            Map<String,Double> s19 = feature19_childrenSouthVsNorthAges(records);
+            boolean moreKids = s19.get("south_avg_children") > s19.get("north_avg_children");
+            System.out.printf("south_avg_children=%.2f north_avg_children=%.2f%n", s19.get("south_avg_children"), s19.get("north_avg_children"));
+            System.out.printf("south_avg_age=%.2f north_avg_age=%.2f%n", s19.get("south_avg_age"), s19.get("north_avg_age"));
+            System.out.println(moreKids ? "TRUE at south average age above" : "FALSE");
+
+
             // Feature 20
             System.out.println("\n=== Feature 20: Regression charges ~ BMI ===");
             feature20_regressionBMI(records);
 
+            System.out.println("\n=== Feature 21: Regression charges ~ children (r + 22 predictions) ===");
+            feature21_regressionChildren(records);
+
             // Extra: age histograms + children counts
-            List<Integer> ages = agesFrom(records);
-            printPerAgeHistogram(ages, 50);
+            
             printBinnedHistogram(ages, 5, 50);
 
             Map<Integer, Integer> byChildren = childrenCounts(records);
