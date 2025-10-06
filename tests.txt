@@ -5,3 +5,10 @@ Arrange: Prepare a CSV file with 10 records.
 Act: Run Driver.loadFirstN("insurance.csv", 5)
 Assert: Output should list the first 5 rows only with correct field parsing (Age, Sex, BMI, Children, Smoker, Region, Charges).
 Result: Success
+
+
+Test 1.2 — Empty CSV
+Arrange: Create an empty file.
+Act: Run Driver.loadFirstN("empty.csv", 3)
+Assert: Output should show I/O error: Empty CSV (no header).
+Result: Success
