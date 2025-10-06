@@ -140,6 +140,33 @@ Act: Run same function.
 Assert: Returns FALSE.
 Result: Success
 
+FEATURE 10 — More children ⇒ lower charge per child (non-increasing)
+Test 10.1 — TRUE when non-increasing per child
+Arrange:
+  Data = [
+    (30,m,25.0,0,no,north,4000),  // per-child 4000
+    (35,f,25.0,1,no,north,3000),  // 3000
+    (40,m,25.0,2,no,north,3000),  // 1500
+    (45,f,25.0,3,no,north,2400)   // 800
+  ]
+Act:
+  Compute per-child averages by children count and check monotone non-increase.
+Expected Result:
+  4000 → 3000 → 1500 → 800 ⇒ TRUE
+
+Test 10.2 — FALSE when any increase occurs
+Arrange:
+  Data = [
+    (30,m,25.0,0,no,north,1000),  // 1000
+    (35,f,25.0,1,no,north,2000)   // 2000 (increase)
+  ]
+Act:
+  Same check.
+Expected Result:
+  Increase detected ⇒ FALSE
+  
+
+
 F-11 Smokers Higher Avg & Wider Range
 
 Test 11.1 — Smokers Pay More
