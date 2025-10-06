@@ -465,6 +465,22 @@ static class InsuranceRecord {
         return out;
     }
 
+    static Map<String,Double> feature19_childrenSouthVsNorthAges(List<InsuranceRecord> records) {
+        double sKids=0,nKids=0, sAge=0,nAge=0; int sCnt=0,nCnt=0;
+        for (InsuranceRecord r : records) {
+            String reg = r.region.toLowerCase();
+            if (reg.contains("south")) { sKids+=r.children; sAge+=r.age; sCnt++; }
+            else if (reg.contains("north")) { nKids+=r.children; nAge+=r.age; nCnt++; }
+        }
+        Map<String,Double> out = new LinkedHashMap<>();
+        out.put("south_avg_children", sCnt==0?0:sKids/sCnt);
+        out.put("north_avg_children", nCnt==0?0:nKids/nCnt);
+        out.put("south_avg_age", sCnt==0?0:sAge/sCnt);
+        out.put("north_avg_age", nCnt==0?0:nAge/nCnt);
+        return out;
+    }
+
+
     // ---------- Feature 20: simple linear regression charges ~ BMI ----------
     public static void feature20_regressionBMI(List<InsuranceRecord> records) {
         double sumX = 0.0, sumY = 0.0, sumXY = 0.0, sumX2 = 0.0, sumY2 = 0.0;
@@ -501,7 +517,34 @@ static class InsuranceRecord {
     }
 
 
+
     // ==== MAIN ====
+
+    static void feature21_regressionChildren(List<InsuranceRecord> records) {
+        int n = records.size();
+        if (n==0) { System.out.println("No data."); return; }
+        double sx=0, sy=0, sxy=0, sx2=0, sy2=0;
+        for (InsuranceRecord r : records) {
+            double x = r.children, y = r.charges;
+            sx+=x; sy+=y; sxy+=x*y; sx2+=x*x; sy2+=y*y;
+        }
+        double denom = n*sx2 - sx*sx;
+        if (denom==0) { System.out.println("Cannot compute regression."); return; }
+        double slope = (n*sxy - sx*sy)/denom;
+        double intercept = (sy - slope*sx)/n;
+        double rnum = n*sxy - sx*sy;
+        double rden = Math.sqrt((n*sx2 - sx*sx)*(n*sy2 - sy*sy));
+        double r = rden==0?0:rnum/rden;
+        System.out.printf("y = %.6f + %.6f*x, r=%.6f%n", intercept, slope, r);
+        for (int i=0;i<22;i++) {
+            double x = i;
+            double y = intercept + slope*x;
+            System.out.printf("x=%.2f y=%.2f%n", x, y);
+        }
+    }
+
+    // ---------- Main ----------
+
     public static void main(String[] args) {
         if (args.length != 2) {
             System.err.println("Usage: java Driver <path-to-insurance.csv> <N>");
@@ -520,6 +563,9 @@ static class InsuranceRecord {
 
         try {
             List<InsuranceRecord> records = loadFirstN(path, N);
+
+            System.out.println("=== Feature 01: Stored First N Records ===");
+
             System.out.println("Stored " + records.size() + " records:");
             for (int i = 0; i < records.size(); i++) {
                 System.out.printf("#%d %s%n", i + 1, records.get(i));
@@ -538,6 +584,16 @@ static class InsuranceRecord {
             Map<String, Integer> smokeCounts = feature06_smokerCounts(records);
             System.out.println("\n=== Feature 06: Smokers vs Non-Smokers (Vertical) ===");
             printFeature06(smokeCounts);
+
+            System.out.println("\n=== Feature 07: Region Fairness (≤5% spread) ===");
+            Map<String,Integer> rc = regionCounts(records);
+            int total = rc.values().stream().mapToInt(i->i).sum();
+            for (Map.Entry<String,Integer> e : rc.entrySet()) {
+                double p = total==0?0:(e.getValue()/(double)total)*100.0;
+                System.out.printf("%-10s : %4d (%.2f%%)%n", e.getKey(), e.getValue(), p);
+            }
+            System.out.println(feature07_fairWithin5Percent(records) ? "FAIR: TRUE" : "FAIR: FALSE");
+
 
             // Feature 08
             System.out.println("\n=== Feature 08: Avg charges age>=50 at least 2x age<=20 ? ===");
