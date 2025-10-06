@@ -301,6 +301,29 @@ Act: Same function.
 Assert: Output FALSE.
 Result: Success
 
+FEATURE 20 — Simple Linear Regression: charges ~ BMI
+Test 20.1 — Perfect line ⇒ exact intercept, slope, r=1; and 11 predictions
+Arrange:
+  Two points on y = 2x + 5:
+    (.., bmi=10, charges=25),
+    (.., bmi=20, charges=45)
+Act:
+  Run regression; capture printed outputs.
+Expected Result:
+  Printed model line:  y = 5.00 + 2.00*x, r=1.000
+  Predictions (11 lines):
+    BMI 15.0 => charges 35.00
+    BMI 18.0 => charges 41.00
+    BMI 21.0 => charges 47.00
+    BMI 24.0 => charges 53.00
+    BMI 27.0 => charges 59.00
+    BMI 30.0 => charges 65.00
+    BMI 33.0 => charges 71.00
+    BMI 36.0 => charges 77.00
+    BMI 39.0 => charges 83.00
+    BMI 42.0 => charges 89.00
+    BMI 45.0 => charges 95.00
+
 F-21 Regression: Children vs Charges
 
 Test 21.1 — Linear Trend Exists
