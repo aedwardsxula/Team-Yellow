@@ -1,0 +1,7 @@
+F-01 Load First N Records
+
+Test 1.1 — Read N Records from CSV
+Arrange: Prepare a CSV file with 10 records.
+Act: Run Driver.loadFirstN("insurance.csv", 5)
+Assert: Output should list the first 5 rows only with correct field parsing (Age, Sex, BMI, Children, Smoker, Region, Charges).
+Result: Success
