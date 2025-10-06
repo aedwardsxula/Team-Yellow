@@ -570,10 +570,18 @@ static class InsuranceRecord {
             Map<String, Stats> stats = computeFeature02Stats(records);
             printFeature02(stats);
 
+            // Feature 03: age horizontal histogram (per age)
+            System.out.println("\n=== Feature 03: Age Horizontal Histogram (per age) ===");
+            List<Integer> ages = agesFrom(records);
+            printPerAgeHistogram(ages, 50);
+
             // Feature 04: BMI vertical histogram (bin=5)
             Map<Integer, Integer> bmiBins = feature04_bmiBins(records, 5);
             System.out.println("\n=== Feature 04: BMI Vertical Histogram (bin=5) ===");
             printFeature04(bmiBins);
+
+            System.out.println("\n=== Feature 05: Age Histograms (per age and binned) ===");
+            printBinnedHistogram(ages, 5, 50);
 
             // Feature 06: smokers vs non-smokers
             Map<String, Integer> smokeCounts = feature06_smokerCounts(records);
@@ -657,8 +665,7 @@ static class InsuranceRecord {
             feature21_regressionChildren(records);
 
             // Extra: age histograms + children counts
-            List<Integer> ages = agesFrom(records);
-            printPerAgeHistogram(ages, 50);
+            
             printBinnedHistogram(ages, 5, 50);
 
             Map<Integer, Integer> byChildren = childrenCounts(records);
